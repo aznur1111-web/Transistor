@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#fafafa">
+<meta name="description" content="AZNUR Transistor Studio. Offline transistor calculator, teaching workspace, circuit analysis tools and interactive transistor visual lab.">
+<title>AZNUR Transistor Studio | Transistor Calculator & Visual Lab</title>
+<style>
+:root{
+  --bg:#fafafa;--surface:#fff;--surface-2:#f5f5f4;--border:#e7e5e4;--text:#1c1917;--muted:#57534e;
+  --accent:#f59e0b;--accent-hover:#d97706;--accent-soft:#fffbeb;--accent-border:#fcd34d;
+  --success:#10b981;--error:#ef4444;--info:#3b82f6;--radius:8px;--radius-lg:12px;
+  --shadow:0 1px 2px rgba(0,0,0,.05);--mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --lab:#171411;--lab-2:#211c18;--lab-line:#332c26;--lab-text:#f5f5f4;--lab-muted:#a8a29e;--lab-hot:#fbbf24;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;font-size:14px;line-height:1.5}
+button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}
+:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.app{display:grid;grid-template-columns:260px 1fr 320px;height:100vh;overflow:hidden}
+.sidebar{background:var(--surface);border-right:1px solid var(--border);overflow-y:auto;display:flex;flex-direction:column}
+.brand{display:flex;align-items:center;gap:10px;padding:16px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--surface);z-index:2}
+.logo{width:36px;height:36px;border-radius:8px;background:var(--accent);display:grid;place-items:center;color:#fff;font-weight:900;font-size:1.1rem}
+.brand b{font-size:15px}.brand small{display:block;color:var(--muted);font-size:11px}
+.nav{padding:12px;display:flex;flex-direction:column;gap:2px}.nav .group{font-size:10px;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;font-weight:700;padding:14px 12px 6px}
+.nav button{background:none;color:var(--text);text-align:left;padding:8px 12px;border-radius:6px;font-size:13px;transition:.15s}.nav button:hover{background:var(--surface-2)}.nav button.active{background:var(--accent-soft);color:var(--accent-hover);font-weight:600}
+.main{overflow-y:auto;padding:20px 24px 60px}.topbar{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.title h1{font-size:1.5rem;font-weight:700}.title p{margin-top:4px;color:var(--muted);font-size:13px}.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:var(--radius);padding:7px 14px;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;transition:.15s}.btn:hover{background:var(--surface-2);border-color:var(--accent)}.btn.primary{background:var(--accent);color:#fff;border-color:var(--accent)}.btn.primary:hover{background:var(--accent-hover);border-color:var(--accent-hover)}.btn.dark{background:var(--text);color:#fff;border-color:var(--text)}.btn.danger{background:var(--error);color:#fff;border-color:var(--error)}
+.right{background:var(--surface);border-left:1px solid var(--border);overflow-y:auto;padding:16px}.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);box-shadow:var(--shadow);padding:20px;margin-bottom:16px}.card h2{font-size:1.2rem;margin-bottom:12px}.card h3{font-size:1rem;margin-bottom:10px}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);gap:14px;margin-bottom:16px}.col-12{grid-column:span 12}.col-8{grid-column:span 8}.col-6{grid-column:span 6}.col-4{grid-column:span 4}.col-3{grid-column:span 3}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}.three{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+label{display:block;color:var(--muted);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+input,select,textarea{width:100%;background:var(--surface);color:var(--text);border:1px solid var(--border);border-radius:var(--radius);padding:9px 11px;font-size:14px;transition:.15s}input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:-1px;border-color:var(--accent)}textarea{min-height:100px;resize:vertical;font-family:var(--mono);font-size:12px}
+.metric-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.metric{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);padding:12px}.metric small{color:var(--muted);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}.metric strong{display:block;font:700 18px var(--mono);margin-top:4px;overflow-wrap:anywhere}.metric.hot strong{color:var(--accent-hover)}.metric.good strong{color:var(--success)}.metric.bad strong{color:var(--error)}
+.result{border-left:3px solid var(--accent);background:var(--accent-soft);padding:12px;border-radius:var(--radius);margin:10px 0;font-size:13px}.result.warn{border-left-color:#f59e0b;background:#fef3c7}.result.danger{border-left-color:var(--error);background:#fee2e2}.result.good{border-left-color:var(--success);background:#ecfdf5}
+.muted{color:var(--muted)}.note{font-size:12px;color:var(--muted);line-height:1.6}.formula{font:12px/1.65 var(--mono);color:var(--muted);background:var(--accent-soft);border-left:3px solid var(--accent);padding:10px 12px;border-radius:0 var(--radius) var(--radius) 0;margin-top:10px}.formula b{color:var(--text)}
+.notice{padding:12px;border:1px solid var(--accent-border);background:var(--accent-soft);border-radius:var(--radius);margin-bottom:14px;font-size:13px;line-height:1.6}.notice.warn{background:#fef3c7;border-color:#fde68a}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.pill{display:inline-block;border:1px solid var(--border);padding:3px 8px;border-radius:999px;color:var(--muted);font-size:10px;font-weight:700}.hidden{display:none!important}
+.section{display:none}.section.active{display:block}.progress{height:8px;background:var(--surface-2);border-radius:99px;overflow:hidden}.progress i{display:block;height:100%;background:var(--accent)}
+.tablewrap{overflow:auto;max-height:500px;border:1px solid var(--border);border-radius:var(--radius)}table{width:100%;border-collapse:collapse;font-size:12px}th,td{border-bottom:1px solid var(--border);padding:9px 10px;text-align:left;vertical-align:top}th{color:var(--muted);background:var(--surface-2);font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;position:sticky;top:0;z-index:1}
+.lesson{border:1px solid var(--border);border-radius:var(--radius);padding:14px;background:var(--surface)}.lesson h4{font-size:13px;margin-bottom:6px}.lesson p,.lesson li{font-size:12px;color:var(--muted);line-height:1.6}.lesson ul{margin-left:18px}
+.kbd{font:600 10px var(--mono);border:1px solid var(--border);background:var(--surface-2);border-radius:4px;padding:2px 5px}.search{display:flex;gap:8px}.search input{flex:1}.status-dot{width:8px;height:8px;border-radius:50%;background:var(--success);display:inline-block;margin-right:6px}
+.lab{background:var(--lab);border:1px solid #2a2521;border-radius:14px;overflow:hidden;color:var(--lab-text);box-shadow:0 10px 30px -18px rgba(28,25,23,.65)}
+.lab-top{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--lab-2);border-bottom:1px solid var(--lab-line);flex-wrap:wrap}.lab-tabs{display:flex;gap:3px;background:#141110;padding:3px;border-radius:8px;flex-wrap:wrap}.lab-tab{background:transparent;color:var(--lab-muted);padding:7px 10px;border-radius:6px;font-size:11px;font-weight:700}.lab-tab:hover{color:var(--lab-text)}.lab-tab.on{background:var(--accent);color:var(--text)}.lab-actions{margin-left:auto;display:flex;gap:7px;align-items:center;flex-wrap:wrap}.lab-btn{background:#141110;color:var(--lab-text);border:1px solid var(--lab-line);border-radius:7px;padding:6px 9px;font-size:11px}.lab-btn:hover{border-color:#4a4034;color:var(--lab-hot)}.lab-speed{display:flex;align-items:center;gap:6px;font:700 10px var(--mono);color:var(--lab-muted)}.lab-speed input{width:85px;padding:0;background:transparent;border:0}.lab-stage{position:relative;height:clamp(350px,52vh,560px);background:#141110}.lab-stage canvas{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none}.lab-readouts{position:absolute;top:10px;right:10px;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:68%;pointer-events:none}.readout{background:rgba(20,17,16,.82);border:1px solid #3c342c;color:var(--lab-muted);font:600 10px var(--mono);padding:4px 8px;border-radius:6px;backdrop-filter:blur(3px)}.readout b{color:var(--lab-hot)}.lab-controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(205px,1fr));gap:12px 18px;padding:14px;background:var(--lab-2);border-top:1px solid var(--lab-line)}.ctl{display:flex;flex-direction:column;gap:5px}.ctl-head{display:flex;justify-content:space-between;gap:8px}.ctl-head label{color:var(--lab-muted);margin:0;font-size:9px}.ctl-val{font:600 10px var(--mono);color:var(--lab-muted)}.ctl input[type=range]{width:100%;height:16px;background:transparent;padding:0;border:0;outline:0}.ctl input[type=range]::-webkit-slider-runnable-track{height:3px;background:#3d372f;border-radius:2px}.ctl input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:13px;height:13px;margin-top:-5px;border-radius:50%;background:var(--accent);border:2px solid var(--lab);box-shadow:0 0 0 1px var(--accent)}.ctl select{height:30px;background:#141110;color:var(--lab-text);border-color:#3d372e;font:600 11px var(--mono);padding:0 8px}
+.chart-legend{position:absolute;left:12px;bottom:10px;background:rgba(20,17,16,.82);border:1px solid #3c342c;border-radius:7px;padding:7px 9px;font:10px/1.5 var(--mono);color:var(--lab-muted)}.legend-line{display:flex;align-items:center;gap:6px}.legend-swatch{width:18px;height:2px;background:var(--lab-hot);display:inline-block}.legend-swatch.alt{background:#60a5fa}.legend-swatch.ok{background:#34d399}
+footer{color:var(--muted);font-size:11px;margin-top:30px;padding-top:16px;border-top:1px solid var(--border)}
+@media(max-width:1200px){.app{grid-template-columns:230px 1fr}.right{display:none}}
+@media(max-width:900px){.app{grid-template-columns:1fr}.sidebar{position:fixed;z-index:100;left:-280px;width:260px;height:100vh;transition:left .2s;box-shadow:2px 0 8px rgba(0,0,0,.1)}.sidebar.open{left:0}.main{padding:16px}.grid,.two,.three{grid-template-columns:1fr}.col-3,.col-4,.col-6,.col-8{grid-column:span 12}.metric-grid{grid-template-columns:1fr}.topbar{align-items:flex-start;flex-direction:column}.right{display:none}}
+@media print{body{background:white}.sidebar,.right,.topbar .actions,.no-print,.lab{display:none!important}.main{padding:0}.card{box-shadow:none;border:1px solid #ccc;break-inside:avoid}.section{display:block!important}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar" id="sidebar">
+  <div class="brand"><div class="logo">Q</div><div><b>AZNUR Transistor</b><small>Calculation & Visual Lab</small></div></div>
+  <nav class="nav" id="nav">
+    <div class="group">Workspace</div>
+    <button data-section="dashboard">Dashboard</button>
+    <button data-section="learn">Learn Transistors</button>
+    <div class="group">BJT</div>
+    <button data-section="bjt-basic">BJT Fundamentals</button>
+    <button data-section="bjt-bias">BJT Biasing</button>
+    <button data-section="bjt-amp">BJT Amplifiers</button>
+    <button data-section="bjt-switch">BJT Switching</button>
+    <div class="group">MOSFET</div>
+    <button data-section="mos-basic">MOSFET Fundamentals</button>
+    <button data-section="mos-bias">MOSFET Biasing</button>
+    <button data-section="mos-amp">MOSFET Amplifiers</button>
+    <button data-section="mos-switch">MOSFET Switching</button>
+    <div class="group">Analysis</div>
+    <button data-section="small-signal">Small-Signal Tools</button>
+    <button data-section="compare">BJT vs MOSFET</button>
+    <button data-section="designer">Transistor Designer</button>
+    <button data-section="finder">Device Finder</button>
+    <button data-section="problems">Practice Problems</button>
+    <button data-section="visual">Visual Lab</button>
+    <div class="group">Data & Reference</div>
+    <button data-section="reference">Formula Reference</button>
+    <button data-section="import">Import / Export</button>
+    <button data-section="settings">Settings</button>
+  </nav>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div class="title"><h1 id="pageTitle">AZNUR Transistor Studio</h1><p id="pageSub">Local-first transistor calculation, teaching and interactive circuit analysis</p></div>
+    <div class="actions"><button class="btn" onclick="toggleMenu()">☰ Menu</button><button class="btn" onclick="window.print()">Print</button><button class="btn" onclick="exportState()">Export</button><button class="btn primary" onclick="saveSnapshot()">Save</button></div>
+  </div>
+
+  <section class="section active" id="dashboard">
+    <div class="notice"><b>Transistor workflow:</b> Identify device → understand terminal voltages → choose operating region → bias the device → check currents and power → derive small-signal behavior → test limits → use the Visual Lab.</div>
+    <div class="three">
+      <div class="card"><h3>Learning Progress</h3><div class="metric-grid"><div class="metric"><small>Modules</small><strong>16</strong></div><div class="metric"><small>Calculators</small><strong>20+</strong></div><div class="metric"><small>Lab Modes</small><strong>6</strong></div><div class="metric"><small>Mode</small><strong>LOCAL</strong></div></div></div>
+      <div class="card"><h3>Core Quantities</h3><div class="metric-grid"><div class="metric"><small>VT</small><strong id="dashVT">25.85 mV</strong></div><div class="metric"><small>β</small><strong id="dashBeta">100</strong></div><div class="metric"><small>VBE</small><strong>0.70 V</strong></div><div class="metric"><small>VCEsat</small><strong>0.20 V</strong></div></div></div>
+      <div class="card"><h3>System Status</h3><div class="result good"><span class="status-dot"></span>Calculators ready</div><div class="result good">Visual Lab <b>LOCAL</b></div><div class="result warn">Device limits must be checked against datasheets.</div></div>
+    </div>
+    <div class="card"><h2>Quick Start</h2><div class="toolbar"><button class="btn primary" onclick="go('bjt-bias')">BJT Bias</button><button class="btn" onclick="go('bjt-amp')">BJT Amplifier</button><button class="btn" onclick="go('mos-bias')">MOSFET Bias</button><button class="btn" onclick="go('mos-amp')">MOSFET Amplifier</button><button class="btn" onclick="go('visual')">Visual Lab</button><button class="btn" onclick="go('problems')">Practice</button></div><div id="dashSummary"></div></div>
+    <div class="card"><h2>What this studio teaches</h2><div class="grid"><div class="col-4"><div class="lesson"><h4>1. Device physics</h4><p>See how a semiconductor device converts terminal voltage and current into a controlled output.</p></div></div><div class="col-4"><div class="lesson"><h4>2. Operating point</h4><p>Understand cutoff, active, saturation, triode and saturation regions before doing amplifier calculations.</p></div></div><div class="col-4"><div class="lesson"><h4>3. Circuit design</h4><p>Move from a target collector or drain current to resistor values, gain, power and switching behavior.</p></div></div></div></div>
+  </section>
+
+  <section class="section" id="learn">
+    <div class="card"><h2>Learn Transistors</h2><p class="muted">Use these short modules as a structured path. Each module links the physical idea to a calculation or Visual Lab mode.</p></div>
+    <div class="grid">
+      <div class="col-6"><div class="lesson"><h4>What is a transistor?</h4><p>A transistor is a three-terminal semiconductor device used for amplification, switching and signal control. In this studio, the two main families are BJTs and MOSFETs.</p><ul><li>BJT terminals: base, collector, emitter.</li><li>MOSFET terminals: gate, drain, source, body.</li><li>The useful question is always: which voltage controls which current?</li></ul></div></div>
+      <div class="col-6"><div class="lesson"><h4>BJT regions</h4><p>For an NPN transistor, a simplified teaching model is enough to start.</p><ul><li>Cutoff: base drive is too small, collector current is near zero.</li><li>Active: collector current is approximately β times base current.</li><li>Saturation: the transistor is driven hard on and VCE becomes small.</li></ul><div class="formula"><b>IC ≈ βIB</b> in active-region analysis.</div></div></div>
+      <div class="col-6"><div class="lesson"><h4>MOSFET regions</h4><p>For an enhancement NMOS, the gate controls the channel without requiring a steady DC gate current in the idealized model.</p><ul><li>Cutoff: VGS below threshold.</li><li>Ohmic or triode: device behaves like a voltage-controlled channel.</li><li>Saturation: current is primarily controlled by overdrive VGS − VTH in the square-law model.</li></ul></div></div>
+      <div class="col-6"><div class="lesson"><h4>Biasing first, gain second</h4><p>An amplifier needs a stable operating point. A useful design sequence is DC bias first, then small-signal gain, then swing and power limits.</p><div class="formula"><b>Q-point → gm or re → gain → swing → power</b></div></div></div>
+      <div class="col-6"><div class="lesson"><h4>Why the load line matters</h4><p>The resistor network limits how much current and voltage the transistor can have at the same time. The intersection with the transistor characteristic is the operating point.</p></div></div>
+      <div class="col-6"><div class="lesson"><h4>Why real devices differ</h4><p>Datasheet values depend on temperature, device batch, current, voltage, package and test conditions. Calculator results here are first-pass design estimates.</p></div></div>
+    </div>
+  </section>
+
+  <section class="section" id="bjt-basic">
+    <div class="card"><h2>BJT Fundamentals</h2><div class="grid"><div class="col-4"><label>Collector current IC (mA)</label><input id="bbIc" type="number" value="10"></div><div class="col-4"><label>Base current IB (uA)</label><input id="bbIb" type="number" value="100"></div><div class="col-4"><label>Emitter current IE (mA)</label><input id="bbIe" type="number" value="10.1"></div><div class="col-4"><label>Beta β</label><input id="bbBeta" type="number" value="100"></div><div class="col-4"><label>VBE (V)</label><input id="bbVbe" type="number" value="0.70" step=".01"></div><div class="col-4"><label>VT (mV)</label><input id="bbVt" type="number" value="25.85" step=".01"></div></div><div class="toolbar"><button class="btn primary" onclick="calcBJTFundamentals()">Calculate BJT relations</button></div><div id="bjtBasicResult"></div><div class="formula"><b>IC ≈ βIB</b> · <b>IE ≈ IC + IB</b> · <b>α = β/(β+1)</b> · <b>gm = IC/VT</b> · <b>re ≈ VT/IE</b></div></div>
+    <div class="card"><h3>BJT operating regions</h3><table><thead><tr><th>Region</th><th>Condition, simplified</th><th>Use</th></tr></thead><tbody><tr><td><b>Cutoff</b></td><td>IB ≈ 0, IC ≈ 0</td><td>OFF switch</td></tr><tr><td><b>Active</b></td><td>IC ≈ βIB</td><td>Linear amplification</td></tr><tr><td><b>Saturation</b></td><td>VCE is low, both junctions forward driven</td><td>ON switch</td></tr></tbody></table></div>
+  </section>
+
+  <section class="section" id="bjt-bias">
+    <div class="card"><h2>BJT Biasing Studio</h2><p class="muted">Compare fixed bias and voltage-divider bias. The latter includes base loading through the Thevenin resistance.</p><div class="two"><div><h3>Fixed-bias NPN</h3><div class="grid"><div class="col-6"><label>VCC (V)</label><input id="fbVcc" type="number" value="12"></div><div class="col-6"><label>RB (kΩ)</label><input id="fbRb" type="number" value="470"></div><div class="col-6"><label>RC (kΩ)</label><input id="fbRc" type="number" value="1"></div><div class="col-6"><label>β</label><input id="fbBeta" type="number" value="100"></div><div class="col-6"><label>VBE (V)</label><input id="fbVbe" type="number" value="0.70"></div><div class="col-6"><label>VCEsat (V)</label><input id="fbVcesat" type="number" value="0.20"></div></div><button class="btn primary" onclick="calcFixedBias()">Calculate fixed bias</button><div id="fixedBiasResult"></div></div><div><h3>Voltage-divider bias</h3><div class="grid"><div class="col-6"><label>VCC (V)</label><input id="vdVcc" type="number" value="12"></div><div class="col-6"><label>R1 (kΩ)</label><input id="vdR1" type="number" value="47"></div><div class="col-6"><label>R2 (kΩ)</label><input id="vdR2" type="number" value="10"></div><div class="col-6"><label>RC (kΩ)</label><input id="vdRc" type="number" value="2.2"></div><div class="col-6"><label>RE (kΩ)</label><input id="vdRe" type="number" value="1"></div><div class="col-6"><label>β</label><input id="vdBeta" type="number" value="100"></div><div class="col-6"><label>VBE (V)</label><input id="vdVbe" type="number" value="0.70"></div><div class="col-6"><label>VCEsat (V)</label><input id="vdVcesat" type="number" value="0.20"></div></div><button class="btn primary" onclick="calcDividerBias()">Calculate divider bias</button><div id="dividerBiasResult"></div></div></div></div>
+    <div class="card"><h3>Bias checklist</h3><div class="grid"><div class="col-4"><div class="result">1. Calculate IB or solve the divider-loaded base equation.</div></div><div class="col-4"><div class="result">2. Calculate IC and IE.</div></div><div class="col-4"><div class="result">3. Calculate VCE and classify the operating region.</div></div></div></div>
+  </section>
+
+  <section class="section" id="bjt-amp">
+    <div class="card"><h2>BJT Common-Emitter Amplifier</h2><div class="grid"><div class="col-4"><label>Quiescent IC (mA)</label><input id="ceIc" type="number" value="2"></div><div class="col-4"><label>β</label><input id="ceBeta" type="number" value="100"></div><div class="col-4"><label>VT (mV)</label><input id="ceVt" type="number" value="25.85"></div><div class="col-4"><label>RC (kΩ)</label><input id="ceRc" type="number" value="4.7"></div><div class="col-4"><label>RL (kΩ)</label><input id="ceRl" type="number" value="10"></div><div class="col-4"><label>RE (Ω), unbypassed</label><input id="ceRe" type="number" value="100"></div><div class="col-4"><label>Emitter bypassed?</label><select id="ceBypass"><option value="no">No</option><option value="yes">Yes</option></select></div><div class="col-4"><label>Input peak (mV)</label><input id="ceVin" type="number" value="10"></div></div><div class="toolbar"><button class="btn primary" onclick="calcCE()">Calculate gain</button><button class="btn" onclick="go('visual')">Open amplifier lab</button></div><div id="ceResult"></div><div class="formula"><b>gm = IC/VT</b> · <b>rπ = β/gm</b> · unbypassed estimate: <b>Av ≈ −(RC || RL)/(re + RE)</b> · bypassed estimate: <b>Av ≈ −gm(RC || RL)</b></div></div>
+  </section>
+
+  <section class="section" id="bjt-switch">
+    <div class="card"><h2>BJT Low-Side Switch</h2><div class="grid"><div class="col-4"><label>Load voltage (V)</label><input id="swVcc" type="number" value="12"></div><div class="col-4"><label>Load current (mA)</label><input id="swIc" type="number" value="100"></div><div class="col-4"><label>VCEsat (V)</label><input id="swVcesat" type="number" value="0.20"></div><div class="col-4"><label>Forced beta</label><input id="swForced" type="number" value="10"></div><div class="col-4"><label>MCU drive voltage (V)</label><input id="swVdrive" type="number" value="5"></div><div class="col-4"><label>Base-emitter drive (V)</label><input id="swVbe" type="number" value="0.80"></div></div><button class="btn primary" onclick="calcBJTSwitch()">Design base resistor</button><div id="bjtSwitchResult"></div><div class="notice warn">This is a first-pass switching calculation. Check transistor VCEO, IC, pulse limits, package power, base-drive capability and SOA before building hardware.</div></div>
+  </section>
+
+  <section class="section" id="mos-basic">
+    <div class="card"><h2>MOSFET Fundamentals</h2><div class="grid"><div class="col-4"><label>VGS (V)</label><input id="mfVgs" type="number" value="4"></div><div class="col-4"><label>VTH (V)</label><input id="mfVth" type="number" value="2"></div><div class="col-4"><label>K (A/V²)</label><input id="mfK" type="number" value="0.02" step=".001"></div><div class="col-4"><label>VDS (V)</label><input id="mfVds" type="number" value="10"></div></div><button class="btn primary" onclick="calcMOSFundamentals()">Calculate MOSFET state</button><div id="mosBasicResult"></div><div class="formula"><b>VOV = VGS − VTH</b> · square-law saturation model: <b>ID ≈ 0.5K(VOV)²</b></div></div>
+    <div class="card"><h3>MOSFET region guide</h3><table><thead><tr><th>Region</th><th>Approximate condition</th><th>Behavior</th></tr></thead><tbody><tr><td>Cutoff</td><td>VGS ≤ VTH</td><td>Channel off in the idealized model</td></tr><tr><td>Triode</td><td>VDS &lt; VOV</td><td>Voltage-controlled low-resistance channel</td></tr><tr><td>Saturation</td><td>VDS ≥ VOV</td><td>Drain current mainly set by VGS in square-law model</td></tr></tbody></table></div>
+  </section>
+
+  <section class="section" id="mos-bias">
+    <div class="card"><h2>MOSFET Bias Studio</h2><p class="muted">Solve a simple self-biased NMOS with gate divider, source resistor and drain resistor by numerical root finding.</p><div class="grid"><div class="col-4"><label>VDD (V)</label><input id="mbVdd" type="number" value="12"></div><div class="col-4"><label>R1 (kΩ)</label><input id="mbR1" type="number" value="100"></div><div class="col-4"><label>R2 (kΩ)</label><input id="mbR2" type="number" value="33"></div><div class="col-4"><label>RD (kΩ)</label><input id="mbRd" type="number" value="2.2"></div><div class="col-4"><label>RS (Ω)</label><input id="mbRs" type="number" value="470"></div><div class="col-4"><label>VTH (V)</label><input id="mbVth" type="number" value="2"></div><div class="col-4"><label>K (A/V²)</label><input id="mbK" type="number" value="0.02" step=".001"></div></div><button class="btn primary" onclick="calcMOSBias()">Solve bias point</button><div id="mosBiasResult"></div></div>
+  </section>
+
+  <section class="section" id="mos-amp">
+    <div class="card"><h2>MOSFET Common-Source Amplifier</h2><div class="grid"><div class="col-4"><label>Drain current ID (mA)</label><input id="csId" type="number" value="2"></div><div class="col-4"><label>K (A/V²)</label><input id="csK" type="number" value="0.02" step=".001"></div><div class="col-4"><label>RD (kΩ)</label><input id="csRd" type="number" value="4.7"></div><div class="col-4"><label>RL (kΩ)</label><input id="csRl" type="number" value="10"></div><div class="col-4"><label>ro (kΩ, 0 = ignore)</label><input id="csRo" type="number" value="0"></div><div class="col-4"><label>Input peak (mV)</label><input id="csVin" type="number" value="10"></div></div><button class="btn primary" onclick="calcCS()">Calculate common-source gain</button><div id="csResult"></div><div class="formula"><b>gm = 2ID/VOV = √(2KID)</b> under the stated K convention. Approximate gain: <b>Av ≈ −gm(RD || RL || ro)</b>.</div></div>
+  </section>
+
+  <section class="section" id="mos-switch">
+    <div class="card"><h2>NMOS Low-Side Switch</h2><div class="grid"><div class="col-4"><label>Supply voltage (V)</label><input id="nsV" type="number" value="12"></div><div class="col-4"><label>Load current (A)</label><input id="nsI" type="number" value="2"></div><div class="col-4"><label>RDS(on) (mΩ)</label><input id="nsRds" type="number" value="30"></div><div class="col-4"><label>Target PWM frequency (kHz)</label><input id="nsF" type="number" value="20"></div><div class="col-4"><label>Gate charge Qg (nC)</label><input id="nsQg" type="number" value="20"></div><div class="col-4"><label>Gate-drive voltage (V)</label><input id="nsVg" type="number" value="10"></div></div><button class="btn primary" onclick="calcMOSSwitch()">Estimate switch losses</button><div id="mosSwitchResult"></div><div class="notice warn">Use datasheet RDS(on), Qg, thermal resistance and switching waveforms for a real design. The estimator is intentionally simplified.</div></div>
+  </section>
+
+  <section class="section" id="small-signal">
+    <div class="card"><h2>Small-Signal Toolkit</h2><div class="two"><div><h3>BJT transconductance and input resistance</h3><div class="grid"><div class="col-6"><label>IC (mA)</label><input id="ssIc" type="number" value="2"></div><div class="col-6"><label>β</label><input id="ssBeta" type="number" value="100"></div><div class="col-6"><label>VT (mV)</label><input id="ssVt" type="number" value="25.85"></div></div><button class="btn primary" onclick="calcSSBJT()">Calculate BJT small signal</button><div id="ssBjtResult"></div></div><div><h3>MOSFET transconductance</h3><div class="grid"><div class="col-6"><label>ID (mA)</label><input id="ssId" type="number" value="2"></div><div class="col-6"><label>K (A/V²)</label><input id="ssK" type="number" value="0.02" step=".001"></div></div><button class="btn primary" onclick="calcSSMOS()">Calculate MOS small signal</button><div id="ssMosResult"></div></div></div><div class="formula"><b>BJT:</b> gm = IC/VT, rπ = β/gm, re ≈ 1/gm. <b>MOSFET:</b> gm ≈ √(2KID) under the square-law convention used here.</div></div>
+  </section>
+
+  <section class="section" id="compare">
+    <div class="card"><h2>BJT vs MOSFET</h2><table><thead><tr><th>Property</th><th>BJT</th><th>MOSFET</th><th>Teaching takeaway</th></tr></thead><tbody><tr><td>Control variable</td><td>Base current strongly linked to collector current in the simple active model</td><td>Gate voltage controls channel current</td><td>Ask what the input terminal controls</td></tr><tr><td>Input DC current</td><td>Base current is normally nonzero</td><td>Ideal gate DC current is approximately zero</td><td>Bias networks look different</td></tr><tr><td>Amplifier quantity</td><td>gm = IC/VT</td><td>gm depends on overdrive and the device model</td><td>Gain follows transconductance times load</td></tr><tr><td>Switch analysis</td><td>Use forced beta and VCEsat as a simple first pass</td><td>Use RDS(on), gate charge and drive voltage</td><td>Real switching needs datasheet data</td></tr><tr><td>Temperature</td><td>Parameters vary with temperature</td><td>Threshold and RDS(on) vary with temperature</td><td>Thermal design is part of the circuit</td></tr></tbody></table></div>
+  </section>
+
+  <section class="section" id="designer">
+    <div class="card"><h2>Transistor Designer</h2><p class="muted">Start from a desired operating point and let the tool propose first-pass resistor values.</p><div class="grid"><div class="col-4"><label>Device</label><select id="tdDevice"><option value="bjt">NPN BJT</option><option value="mos">NMOS</option></select></div><div class="col-4"><label>Supply (V)</label><input id="tdV" type="number" value="12"></div><div class="col-4"><label>Target current</label><input id="tdI" type="number" value="2"></div><div class="col-4"><label>Target VCE/VDS (V)</label><input id="tdVout" type="number" value="6"></div><div class="col-4"><label>Collector/drain resistor limit (kΩ)</label><input id="tdRmax" type="number" value="10"></div><div class="col-4"><label>Target gain magnitude</label><input id="tdGain" type="number" value="10"></div><div class="col-4"><label>β for BJT</label><input id="tdBeta" type="number" value="100"></div><div class="col-4"><label>VTH for MOS (V)</label><input id="tdVth" type="number" value="2"></div><div class="col-4"><label>K for MOS (A/V²)</label><input id="tdK" type="number" value="0.02" step=".001"></div></div><button class="btn primary" onclick="designTransistor()">Generate design</button><div id="designResult"></div></div>
+  </section>
+
+  <section class="section" id="finder">
+    <div class="card"><h2>Device Finder</h2><div class="search"><input id="deviceSearch" placeholder="Search 2N3904, BC547, 2N7000, IRLZ44N..." oninput="renderDevices()"><select id="deviceType" onchange="renderDevices()"><option value="all">All</option><option value="bjt">BJT</option><option value="mos">MOSFET</option></select></div><div class="notice" style="margin-top:12px">Starter values below are typical planning placeholders, not guaranteed production limits. Always use the exact device datasheet for voltage, current, power, gain, RDS(on), Qg and SOA.</div><div class="tablewrap"><table><thead><tr><th>Device</th><th>Type</th><th>V max</th><th>I max</th><th>Gain / RDS(on)</th><th>Use</th></tr></thead><tbody id="deviceBody"></tbody></table></div></div>
+  </section>
+
+  <section class="section" id="problems">
+    <div class="card"><h2>Practice Problems</h2><p class="muted">Generate small, calculation-focused problems. Reveal the answer only after solving on paper.</p><div class="toolbar"><button class="btn primary" onclick="newProblem()">New problem</button><button class="btn" onclick="revealProblem()">Reveal answer</button><button class="btn" onclick="go('visual')">Check in Visual Lab</button></div><div id="problemCard" class="result"></div><div id="problemAnswer" class="notice hidden"></div></div>
+    <div class="card"><h3>Suggested study loop</h3><div class="grid"><div class="col-4"><div class="lesson"><h4>Calculate</h4><p>Do the problem without looking at the answer.</p></div></div><div class="col-4"><div class="lesson"><h4>Visualize</h4><p>Use the load-line or output-curve lab to check the operating region.</p></div></div><div class="col-4"><div class="lesson"><h4>Explain</h4><p>State why the device is in cutoff, active, triode or saturation.</p></div></div></div></div>
+  </section>
+
+  <section class="section" id="visual">
+    <div class="card"><h2>Transistor Visual Lab</h2><p class="muted">Interactive canvas experiments for intuition. Drag the sliders, switch modes and watch the operating point move.</p></div>
+    <div class="lab" id="lab">
+      <div class="lab-top"><div class="lab-tabs" id="labTabs"><button class="lab-tab on" data-mode="bjt-load">BJT load line</button><button class="lab-tab" data-mode="bjt-curves">BJT curves</button><button class="lab-tab" data-mode="mos-curves">MOSFET curves</button><button class="lab-tab" data-mode="mos-transfer">MOS transfer</button><button class="lab-tab" data-mode="amp-wave">Amplifier</button><button class="lab-tab" data-mode="power">Power</button></div><div class="lab-actions"><button class="lab-btn" id="labPlay">⏸</button><button class="lab-btn" id="labReset">↺</button><button class="lab-btn" id="labPNG">Export PNG</button><div class="lab-speed"><span>speed</span><input type="range" id="labSpeed" min="0.2" max="3" step=".1" value="1"><span id="labSpeedVal">1.0x</span></div></div></div>
+      <div class="lab-stage"><canvas id="labCanvas"></canvas><div class="lab-readouts" id="labReadouts"></div><div class="chart-legend" id="labLegend"></div></div>
+      <div class="lab-controls" id="labControls"></div>
+    </div>
+  </section>
+
+  <section class="section" id="reference">
+    <div class="card"><h2>Formula Reference</h2><div class="grid"><div class="col-6"><div class="lesson"><h4>BJT DC</h4><p>Fixed bias: IB = (VCC − VBE)/RB.</p><p>Active region: IC ≈ βIB.</p><p>Divider bias: IB = (VTH − VBE)/(RTH + (β + 1)RE).</p><p>VCE = VCC − ICRC − IERE.</p></div></div><div class="col-6"><div class="lesson"><h4>MOSFET DC</h4><p>Overdrive: VOV = VGS − VTH.</p><p>Square-law saturation: ID ≈ 0.5K(VOV)².</p><p>Ohmic condition: VDS &lt; VOV.</p><p>Saturation condition: VDS ≥ VOV.</p></div></div><div class="col-6"><div class="lesson"><h4>BJT small signal</h4><p>gm = IC/VT.</p><p>rπ = β/gm.</p><p>re ≈ VT/IE ≈ 1/gm for a first-pass estimate.</p><p>CE gain with bypassed emitter: Av ≈ −gm(RC || RL).</p></div></div><div class="col-6"><div class="lesson"><h4>MOSFET small signal</h4><p>gm ≈ √(2KID) using the K convention in this app.</p><p>Common-source gain with optional ro: Av ≈ −gm(RD || RL || ro).</p><p>Switch conduction loss: P ≈ ID²RDS(on).</p></div></div></div></div>
+    <div class="card"><h2>Constants and assumptions</h2><table><thead><tr><th>Quantity</th><th>Value / model</th><th>Meaning</th></tr></thead><tbody><tr><td>Thermal voltage VT</td><td>25.85 mV at room-temperature reference</td><td>Used in BJT small-signal calculations</td></tr><tr><td>Typical BJT VBE</td><td>0.70 V</td><td>Educational silicon approximation, not a fixed constant</td></tr><tr><td>Typical VCEsat</td><td>0.20 V</td><td>Educational switching approximation</td></tr><tr><td>MOSFET K</td><td>User-entered</td><td>Must match the square-law convention stated by the calculator</td></tr><tr><td>Device data</td><td>Typical starter values only</td><td>Replace with the exact datasheet for hardware design</td></tr></tbody></table></div>
+  </section>
+
+  <section class="section" id="import">
+    <div class="card"><h2>Import / Export</h2><div class="notice">The studio stores settings and selected working values locally in the browser. Export JSON before clearing browser data or moving to another device.</div><div class="toolbar"><button class="btn" onclick="exportState()">Export JSON</button><label class="btn">Import JSON<input type="file" accept="application/json,.json" hidden onchange="importState(event)"></label><button class="btn" onclick="saveSnapshot()">Save snapshot</button><button class="btn danger" onclick="resetApp()">Reset local app data</button></div><textarea id="ioText" placeholder="Exported JSON appears here"></textarea></div>
+  </section>
+
+  <section class="section" id="settings">
+    <div class="card"><h2>Settings</h2><div class="grid"><div class="col-4"><label>Default VT (mV)</label><input id="setVT" type="number" value="25.85" step=".01"></div><div class="col-4"><label>Default β</label><input id="setBeta" type="number" value="100"></div><div class="col-4"><label>Default VBE (V)</label><input id="setVbe" type="number" value="0.70" step=".01"></div><div class="col-4"><label>Theme accent</label><select id="setAccent"><option value="amber">Amber</option><option value="blue">Blue</option><option value="green">Green</option></select></div><div class="col-4"><label>Application mode</label><select id="setMode"><option>Engineering</option><option>Student</option><option>Teaching</option></select></div></div><button class="btn primary" onclick="saveSettings()">Save settings</button><div id="settingsResult"></div></div>
+  </section>
+
+  <footer>AZNUR Transistor Studio · Offline single-file toolbook · Calculations are educational first-pass models. Verify device limits, equations and operating conditions against authoritative datasheets and course references before hardware use.</footer>
+</main>
+
+<aside class="right">
+  <div class="card"><h3>Live Context</h3><div class="metric"><small>Current section</small><strong id="ctxSection">Dashboard</strong></div><br><div class="metric"><small>Lab mode</small><strong id="ctxLab">BJT load line</strong></div></div>
+  <div class="card"><h3>Calculation Notes</h3><div id="notes" class="muted">Choose a calculator. The right panel keeps assumptions and common checks visible while you work.</div></div>
+  <div class="card"><h3>Engineering Checks</h3><div class="result">Check operating region</div><div class="result">Check power dissipation</div><div class="result">Check resistor ratings</div><div class="result warn">Check datasheet tolerances and temperature</div></div>
+  <div class="card"><h3>Useful Lab Modes</h3><div class="toolbar"><button class="btn" onclick="go('visual');setLabMode('bjt-load')">BJT load line</button><button class="btn" onclick="go('visual');setLabMode('bjt-curves')">BJT curves</button><button class="btn" onclick="go('visual');setLabMode('mos-curves')">MOS curves</button><button class="btn" onclick="go('visual');setLabMode('amp-wave')">Amplifier waveform</button></div></div>
+</aside>
+</div>
+
+<script>
+'use strict';
+/* ============ helpers (unchanged) ============ */
+const $=id=>document.getElementById(id);
+const fmt=(x,d=3)=>Number.isFinite(x)?Number(x.toFixed(d)).toString():'N/A';
+const pos=(x,fb=0)=>Number.isFinite(+x)?+x:fb;
+const parallel=(...rs)=>{const v=rs.filter(x=>x>0);return v.length?v.reduce((a,r)=>1/(1/a+1/r)):0};
+const setHTML=(id,html)=>{if($(id))$(id).innerHTML=html};
+
+/* engineering-value helpers */
+function fmtEng(r){if(!Number.isFinite(r)||r<=0)return '-';
+ if(r>=1e6)return fmt(r/1e6,2)+' MΩ';
+ if(r>=1e3)return fmt(r/1e3,2)+' kΩ';
+ return fmt(r,1)+' Ω';}
+function e24n(r){if(!(r>0)||!Number.isFinite(r))return '-';
+ const s=[10,11,12,13,15,16,18,20,22,24,27,30,33,36,39,43,47,51,56,62,68,75,82,91];
+ let best=s[0],bd=1e18;
+ for(let d=1;d<=1e7;d*=10)for(let i=0;i<s.length;i++){const c=s[i]*d;if(Math.abs(c-r)<bd){bd=Math.abs(c-r);best=c;}}
+ return fmtEng(best);}
+function niceStep(x){if(!(x>0))return 1;const p=Math.pow(10,Math.floor(Math.log10(x)));const m=x/p;return(m<1.5?1:m<3.5?2:m<7.5?5:10)*p;}
+
+/* ============ data (unchanged) ============ */
+const devices=[
+ {name:'2N3904',type:'bjt',v:'40 V',i:'200 mA',gain:'β varies with IC',use:'General NPN switching and small signal'},
+ {name:'2N2222A',type:'bjt',v:'40 V',i:'600 mA',gain:'β varies with IC',use:'General NPN switching'},
+ {name:'BC547B',type:'bjt',v:'45 V',i:'100 mA',gain:'High gain group',use:'Low-power analog and switching'},
+ {name:'2N3906',type:'bjt',v:'40 V',i:'200 mA',gain:'β varies with IC',use:'General PNP switching and small signal'},
+ {name:'2N7000',type:'mos',v:'60 V',i:'device dependent',gain:'RDS(on) is gate-voltage dependent',use:'Small-signal logic-level style switching'},
+ {name:'IRLZ44N',type:'mos',v:'55 V',i:'high current class',gain:'Low RDS(on) at specified drive',use:'Power switching with adequate gate drive'},
+ {name:'AO3400A',type:'mos',v:'30 V',i:'5 A class',gain:'Low RDS(on) at specified drive',use:'Compact low-voltage switching'}
+];
+const problemBank=[
+ {q:'An NPN has β = 120 and IB = 40 µA. Find IC and IE.',a:'IC ≈ 4.80 mA and IE ≈ 4.84 mA.'},
+ {q:'A fixed-bias NPN uses VCC = 10 V, RB = 470 kΩ, VBE = 0.70 V and β = 100. Find IB and IC.',a:'IB ≈ 19.8 µA. IC ≈ 1.98 mA before checking VCE and saturation.'},
+ {q:'A common-emitter stage has IC = 2 mA and VT = 25.85 mV. Find gm.',a:'gm ≈ 0.0774 S, or 77.4 mS.'},
+ {q:'A MOSFET uses K = 0.02 A/V², VTH = 2 V and VGS = 5 V. Find the square-law saturation current.',a:'VOV = 3 V. ID ≈ 0.5 × 0.02 × 9 = 0.09 A.'},
+ {q:'A BJT switch carries 100 mA with forced β = 10. Estimate the base current.',a:'IB ≈ 10 mA.'},
+ {q:'A MOSFET has ID = 2 A and RDS(on) = 30 mΩ. Estimate conduction loss.',a:'P ≈ ID²R = 4 × 0.03 = 0.12 W.'}
+];
+let state={section:'dashboard',labMode:'bjt-load',labPaused:false,labTime:0,settings:{VT:25.85,beta:100,vbe:.70,accent:'amber',mode:'Engineering'},problemIndex:0};
+
+/* ============ navigation & persistence (unchanged except resetApp) ============ */
+function go(id){document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));if($(id))$(id).classList.add('active');document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.section===id));const b=document.querySelector('#nav button[data-section="'+id+'"]');$('pageTitle').textContent=b?b.textContent:'AZNUR Transistor Studio';$('pageSub').textContent='Local-first transistor calculation, teaching and interactive circuit analysis';state.section=id;$('ctxSection').textContent=b?b.textContent:'Dashboard';updateNotes();saveState();if(id==='visual')resizeCanvas()}
+function toggleMenu(){$('sidebar').classList.toggle('open')}
+function updateNotes(){const map={dashboard:'Start with a DC operating point. The Visual Lab can then show the same device graphically.',learn:'Use the lessons to connect equations with operating regions and circuit behavior.', 'bjt-basic':'Active-region relations are first-pass models. Check VCE before accepting IC = βIB.','bjt-bias':'After calculating bias, classify the region and calculate device power.','bjt-amp':'Gain estimates assume small signals around the stated quiescent point.','bjt-switch':'Forced beta is a design margin, not the transistor data-sheet beta.','mos-basic':'The square-law model is for teaching and first-pass analysis. Real MOSFET behavior is more detailed.','mos-bias':'Numerical solving handles the source-resistor feedback without requiring a closed-form quadratic.','mos-amp':'The common-source gain is a small-signal estimate around the chosen drain current.','mos-switch':'Gate charge and RDS(on) both affect switching behavior; thermal design still matters.','small-signal':'Small-signal parameters depend directly on the DC operating point.','compare':'Different transistor families require different biasing assumptions.','designer':'Use the generated values as starting points, then check standard resistor values and voltage headroom.','finder':'Starter device data are only for orientation. Always check the exact manufacturer datasheet.','problems':'Solve first, reveal second. Then use the Visual Lab to verify the operating region.','visual':'The canvas shows relationships, not a replacement for SPICE or a measured circuit.','reference':'Keep track of the model convention, especially the MOSFET K definition.','import':'Export JSON before clearing browser data or moving to another machine.','settings':'These defaults influence the teaching workspace and are stored locally.'};$('notes').textContent=map[state.section]||'Choose a calculator.'}
+
+function collectFields(){const out={};document.querySelectorAll('input[id],select[id],textarea[id]').forEach(el=>{if(el.type==='file')return;out[el.id]=el.value});return out}
+function restoreFields(){try{const f=JSON.parse(localStorage.getItem('aznur_transistor_fields')||'{}');if(f&&typeof f==='object')Object.entries(f).forEach(([id,v])=>{const el=$(id);if(el&&el.type!=='file')el.value=v})}catch(e){}}
+let fieldTimer=0;
+function persistFields(){clearTimeout(fieldTimer);fieldTimer=setTimeout(()=>{try{localStorage.setItem('aznur_transistor_fields',JSON.stringify(collectFields()))}catch(e){}},120)}
+function saveState(){try{localStorage.setItem('aznur_transistor_state',JSON.stringify(state));localStorage.setItem('aznur_transistor_fields',JSON.stringify(collectFields()))}catch(e){}}
+function loadState(){try{const s=JSON.parse(localStorage.getItem('aznur_transistor_state')||'null');if(s&&typeof s==='object'){state={...state,...s,settings:{...state.settings,...(s.settings||{})}}}}catch(e){};restoreFields();applySettings();go(state.section||'dashboard');setLabMode(state.labMode||'bjt-load')}
+function applySettings(){const a=state.settings.accent;const root=document.documentElement;if(a==='blue'){root.style.setProperty('--accent','#3b82f6');root.style.setProperty('--accent-hover','#2563eb');root.style.setProperty('--accent-soft','#eff6ff');root.style.setProperty('--accent-border','#93c5fd')}else if(a==='green'){root.style.setProperty('--accent','#10b981');root.style.setProperty('--accent-hover','#059669');root.style.setProperty('--accent-soft','#ecfdf5');root.style.setProperty('--accent-border','#6ee7b7')}else{root.style.setProperty('--accent','#f59e0b');root.style.setProperty('--accent-hover','#d97706');root.style.setProperty('--accent-soft','#fffbeb');root.style.setProperty('--accent-border','#fcd34d')}}
+function saveSnapshot(){const payload={time:new Date().toISOString(),state,fields:collectFields(),section:state.section,labMode:state.labMode};$('ioText').value=JSON.stringify(payload,null,2);try{localStorage.setItem('aznur_transistor_snapshot',JSON.stringify(payload))}catch(e){};flash('Snapshot saved locally')}
+function exportState(){const payload={version:1,app:'AZNUR Transistor Studio',state,fields:collectFields()};$('ioText').value=JSON.stringify(payload,null,2);download('aznur_transistor_state.json',JSON.stringify(payload,null,2),'application/json');flash('State exported')}
+function importState(ev){const f=ev.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const p=JSON.parse(r.result);const s=p.state||p;state={...state,...s,settings:{...state.settings,...(s.settings||{})}};if(p.fields&&typeof p.fields==='object'){localStorage.setItem('aznur_transistor_fields',JSON.stringify(p.fields));Object.entries(p.fields).forEach(([id,v])=>{const el=$(id);if(el&&el.type!=='file')el.value=v})}saveState();applySettings();go(state.section||'dashboard');setLabMode(state.labMode||'bjt-load');$('ioText').value=JSON.stringify(p,null,2);flash('State imported')}catch(e){flash('Invalid JSON file',true)}};r.readAsText(f)}
+function resetApp(){if(!confirm('Reset local AZNUR transistor settings and workspace state?'))return;localStorage.removeItem('aznur_transistor_state');localStorage.removeItem('aznur_transistor_fields');localStorage.removeItem('aznur_transistor_snapshot');location.reload()}
+function flash(msg,bad=false){let t=$('flash');if(!t){t=document.createElement('div');t.id='flash';t.style.cssText='position:fixed;right:20px;bottom:20px;z-index:300;padding:10px 14px;border-radius:8px;font:600 11px var(--mono);box-shadow:0 10px 30px rgba(0,0,0,.15)';document.body.appendChild(t)}t.style.background=bad?'#fee2e2':'#ecfdf5';t.style.color=bad?'#b91c1c':'#047857';t.textContent=msg;clearTimeout(t._tm);t._tm=setTimeout(()=>t.remove(),1800)}
+function download(name,text,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+
+/* ============ BJT fundamentals (units fixed) ============ */
+function calcBJTFundamentals(){
+  const ic=pos($('bbIc').value),ib=pos($('bbIb').value)/1000,ie=pos($('bbIe').value),
+        beta=Math.max(1,pos($('bbBeta').value,100)),vbe=pos($('bbVbe').value,.7),vt=pos($('bbVt').value,25.85)/1000;
+  const icCalc=ib*beta, ieCalc=icCalc+ib, alpha=beta/(beta+1);
+  const gmS=(icCalc>0&&vt>0)?(icCalc/1000)/vt:NaN;
+  const reOhm=(ieCalc>0&&vt>0)?vt/(ieCalc/1000):NaN;
+  const dev=(ic>0&&icCalc>0)?Math.abs(ic-icCalc)/ic*100:0;
+  setHTML('bjtBasicResult',
+   '<div class="metric-grid">'+
+   '<div class="metric"><small>IC = β·IB</small><strong>'+fmt(icCalc,3)+' mA</strong></div>'+
+   '<div class="metric"><small>IE = IC+IB</small><strong>'+fmt(ieCalc,3)+' mA</strong></div>'+
+   '<div class="metric"><small>α = β/(β+1)</small><strong>'+fmt(alpha,4)+'</strong></div>'+
+   '<div class="metric"><small>gm = IC/VT</small><strong>'+fmt(gmS*1000,2)+' mS</strong></div>'+
+   '<div class="metric"><small>re ≈ VT/IE</small><strong>'+fmt(reOhm,2)+' Ω</strong></div>'+
+   '<div class="metric"><small>IC cross-check</small><strong>'+(ic>0?fmt(dev,1)+' %':'-')+'</strong></div>'+
+   '</div>'+
+   '<div class="result">From IB = '+fmt(ib*1000,1)+' µA and β = '+fmt(beta,0)+': IC ≈ '+fmt(icCalc,3)+' mA, IE ≈ '+fmt(ieCalc,3)+' mA, gm ≈ '+fmt(gmS*1000,2)+' mS, re ≈ '+fmt(reOhm,2)+' Ω.'+(ic>0&&dev>5?' The entered IC ('+fmt(ic,2)+' mA) differs from β·IB by '+fmt(dev,1)+'% - decide which value is authoritative.':'')+'</div>');
+}
+
+/* ============ BJT fixed bias (completed) ============ */
+function fixedBiasVce(V,Rb,Rc,b,vbe,sat){
+  const ib=(V-vbe)/Rb,icW=b*ib,icS=(V-sat)/Rc;
+  if(icW>=icS)return sat;
+  return V-Math.min(icW,icS)*Rc;
+}
+function calcFixedBias(){
+  const V=pos($('fbVcc').value),Rb=pos($('fbRb').value)*1000,Rc=pos($('fbRc').value)*1000,
+        b=Math.max(1,pos($('fbBeta').value,100)),vbe=pos($('fbVbe').value,.7),sat=pos($('fbVcesat').value,.2);
+  if(V<=0||Rb<=0||Rc<=0){setHTML('fixedBiasResult','<div class="result danger">Enter positive values for VCC, RB and RC.</div>');return;}
+  if(vbe>=V){setHTML('fixedBiasResult','<div class="result danger">VBE must be smaller than VCC, otherwise no base current flows.</div>');return;}
+  const ib=(V-vbe)/Rb, icWant=b*ib, icSat=(V-sat)/Rc;
+  const saturated=icWant>=icSat;
+  const ic=Math.min(icWant,icSat), vce=saturated?sat:V-ic*Rc;
+  const pd=vce*ic+vbe*ib;
+  const gmS=(ic>0)?ic/(state.settings.VT/1000):0;
+  const vce2=fixedBiasVce(V,Rb,Rc,b*2,vbe,sat);
+  setHTML('fixedBiasResult',
+   '<div class="metric-grid">'+
+   '<div class="metric"><small>IB</small><strong>'+fmt(ib*1e6,2)+' µA</strong></div>'+
+   '<div class="metric"><small>IC = βIB</small><strong>'+fmt(ic*1000,3)+' mA</strong></div>'+
+   '<div class="metric '+(saturated?'bad':'good')+'"><small>VCE</small><strong>'+fmt(vce,3)+' V</strong></div>'+
+   '<div class="metric"><small>Device PD</small><strong>'+fmt(pd*1000,1)+' mW</strong></div>'+
+   '<div class="metric"><small>gm</small><strong>'+fmt(gmS*1000,2)+' mS</strong></div>'+
+   '<div class="metric"><small>Region</small><strong>'+(saturated?'SATURATION':'ACTIVE')+'</strong></div>'+
+   '</div>'+
+   (saturated
+    ?'<div class="result danger">The transistor saturates: βIB wants '+fmt(icWant*1000,2)+' mA, but the collector circuit limits IC to (VCC−VCEsat)/RC = '+fmt(icSat*1000,2)+' mA, pinning VCE near '+fmt(sat,2)+' V. Increase RB, increase RC or accept switching behavior.</div>'
+    :'<div class="result good">Active region: VCE = '+fmt(vce,2)+' V leaves '+fmt(vce-sat,2)+' V of swing above saturation.</div>')+
+   '<div class="result warn">Fixed bias is β-sensitive: doubling β to '+fmt(b*2,0)+' would move VCE to ≈ '+fmt(vce2,2)+' V. Divider bias (right) is far more stable.</div>');
+}
+
+/* ============ BJT divider bias ============ */
+function calcDividerBias(){
+  const V=pos($('vdVcc').value),R1=pos($('vdR1').value)*1000,R2=pos($('vdR2').value)*1000,
+        Rc=pos($('vdRc').value)*1000,Re=pos($('vdRe').value)*1000,
+        b=Math.max(1,pos($('vdBeta').value,100)),vbe=pos($('vdVbe').value,.7),sat=pos($('vdVcesat').value,.2);
+  if(V<=0||R1<=0||R2<=0||Rc<=0||Re<0){setHTML('dividerBiasResult','<div class="result danger">Enter positive values for VCC, R1, R2 and RC (RE may be 0).</div>');return;}
+  const vth=V*R2/(R1+R2), rth=R1*R2/(R1+R2);
+  if(vth<=vbe){setHTML('dividerBiasResult','<div class="result warn">The divider gives VTH = '+fmt(vth,2)+' V ≤ VBE = '+fmt(vbe,2)+' V - the transistor is cut off (IB ≈ 0, VCE ≈ VCC). Raise R2 or lower R1.</div>');return;}
+  const ib=(vth-vbe)/(rth+(b+1)*Re), ic=b*ib, ie=(b+1)*ib;
+  const vce=V-ic*Rc-ie*Re;
+  let region,icR,vceR;
+  if(ic<=0){region='CUTOFF';icR=0;vceR=V;}
+  else if(vce>=sat){region='ACTIVE';icR=ic;vceR=vce;}
+  else{region='SATURATION';icR=(V-sat)/(Rc+Re);vceR=sat;}
+  const pd=vceR*icR;
+  const ib2=(vth-vbe)/(rth+(2*b+1)*Re), ic2=2*b*ib2;
+  const shift=(ic>0)?(ic2-ic)/ic*100:0;
+  setHTML('dividerBiasResult',
+   '<div class="metric-grid">'+
+   '<div class="metric"><small>VTH</small><strong>'+fmt(vth,3)+' V</strong></div>'+
+   '<div class="metric"><small>RTH</small><strong>'+fmt(rth/1000,2)+' kΩ</strong></div>'+
+   '<div class="metric"><small>IB</small><strong>'+fmt(ib*1e6,2)+' µA</strong></div>'+
+   '<div class="metric"><small>IC</small><strong>'+fmt(icR*1000,3)+' mA</strong></div>'+
+   '<div class="metric"><small>VCE</small><strong>'+fmt(vceR,3)+' V</strong></div>'+
+   '<div class="metric"><small>PD</small><strong>'+fmt(pd*1000,1)+' mW</strong></div>'+
+   '</div>'+
+   (region==='ACTIVE'
+    ?'<div class="result good">Active region: VCE = '+fmt(vceR,2)+' V. Doubling β to '+fmt(b*2,0)+' would shift IC by only '+fmt(shift,1)+'% - RE stabilizes the operating point.</div>'
+    :'<div class="result '+(region==='SATURATION'?'danger':'warn')+'">'+region+': VCE = '+fmt(vceR,2)+' V. '+(region==='SATURATION'?'IC is limited to '+fmt(icR*1000,2)+' mA - reduce RC/RE or the divider voltage.':'No collector current is flowing.')+'</div>'));
+}
+
+/* ============ BJT common-emitter amplifier ============ */
+function calcCE(){
+  const ic=pos($('ceIc').value),b=Math.max(1,pos($('ceBeta').value,100)),vt=pos($('ceVt').value,25.85),
+        rc=pos($('ceRc').value),rl=pos($('ceRl').value),reU=pos($('ceRe').value),
+        byp=$('ceBypass').value==='yes',vin=pos($('ceVin').value);
+  if(ic<=0||vt<=0){setHTML('ceResult','<div class="result danger">IC and VT must be positive.</div>');return;}
+  const gm=ic/vt;                 /* S */
+  const rpi=b/gm;                 /* Ω */
+  const reInt=vt/ic;              /* Ω */
+  const rL=parallel(rc,rl)*1000;  /* Ω */
+  let av,rin,vbePk;
+  if(byp){av=-gm*rL;rin=rpi;vbePk=vin;}
+  else{av=-rL/(reInt+reU);rin=rpi+(b+1)*reU;vbePk=vin*reInt/(reInt+reU);}
+  const voutPk=Math.abs(av)*vin/1000;
+  setHTML('ceResult',
+   '<div class="metric-grid">'+
+   '<div class="metric"><small>gm</small><strong>'+fmt(gm*1000,1)+' mS</strong></div>'+
+   '<div class="metric"><small>rπ</small><strong>'+fmt(rpi,0)+' Ω</strong></div>'+
+   '<div class="metric"><small>re</small><strong>'+fmt(reInt,1)+' Ω</strong></div>'+
+   '<div class="metric"><small>RC ∥ RL</small><strong>'+fmt(rL/1000,2)+' kΩ</strong></div>'+
+   '<div class="metric hot"><small>Gain Av</small><strong>'+fmt(av,1)+'</strong></div>'+
+   '<div class="metric"><small>Rin (base)</small><strong>'+fmt(rin/1000,1)+' kΩ</strong></div>'+
+   '</div>'+
+   '<div class="result">'+(byp?'Emitter bypassed: Av ≈ −gm(RC∥RL) = ':'Emitter unbypassed: Av ≈ −(RC∥RL)/(re+RE) = ')+fmt(av,2)+' → '+fmt(voutPk*1000,0)+' mV pk out for '+fmt(vin,0)+' mV pk in.</div>'+
+   (vbePk>10?'<div class="result warn">The base sees ≈ '+fmt(vbePk,1)+' mV pk. Above ~10 mV the exponential BJT characteristic distorts noticeably - reduce the input or keep some unbypassed RE.</div>':''));
+}
+
+/* ============ BJT switch ============ */
+function calcBJTSwitch(){
+  const V=pos($('swVcc').value),ic=pos($('swIc').value)/1000,sat=pos($('swVcesat').value,.2),
+        forced=Math.max(1,pos($('swForced').value,10)),vd=pos($('swVdrive').value),vbe=pos($('swVbe').value,.8);
+  if(V<=0||ic<=0){setHTML('bjtSwitchResult','<div class="result danger">Load voltage and load current must be positive.</div>');return;}
+  if(vd<=vbe){setHTML('bjtSwitchResult','<div class="result danger">Drive voltage must exceed VBE, otherwise no base current flows.</div>');return;}
+  const ib=ic/forced, rb=(vd-vbe)/ib;
+  const rLoad=(V-sat)/ic, pT=sat*ic, pL=(V-sat)*ic;
+  setHTML('bjtSwitchResult',
+   '<div class="metric-grid">'+
+   '<div class="metric"><small>IB = IC/forcedβ</small><strong>'+fmt(ib*1000,2)+' mA</strong></div>'+
+   '<div class="metric hot"><small>RB</small><strong>'+fmt(rb/1000,2)+' kΩ ≈ '+e24n(rb)+'</strong></div>'+
+   '<div class="metric"><small>Transistor loss</small><strong>'+fmt(pT*1000,1)+' mW</strong></div>'+
+   '<div class="metric"><small>Load power</small><strong>'+fmt(pL*1000,0)+' mW</strong></div>'+
+   '<div class="metric"><small>Implied load</small><strong>'+fmt(rLoad,1)+' Ω</strong></div>'+
+   '<div class="metric"><small>Efficiency</small><strong>'+fmt(pL/(pL+pT)*100,1)+' %</strong></div>'+
+   '</div>'+
+   '<div class="result">Drive the base through RB = '+fmt(rb/1000,2)+' kΩ from '+fmt(vd,1)+' V to switch IC = '+fmt(ic*1000,0)+' mA at forced β = '+fmt(forced,0)+'.</div>'+
+   (ib>0.02?'<div class="result warn">Required base current is '+fmt(ib*1000,1)+' mA - beyond what a typical MCU pin (≈20 mA) should supply. Add a driver stage or use a logic-level MOSFET instead.</div>':''));
+}
+
+/* ============ MOSFET fundamentals ============ */
+function calcMOSFundamentals(){
+  const vgs=pos($('mfVgs').value),vth=pos($('mfVth').value),k=pos($('mfK').value,.02),vds=pos($('mfVds').value);
+  if(k<=0){setHTML('mosBasicResult','<div class="result danger">K must be positive.</div>');return;}
+  const vov=vgs-vth;
+  let region,id=0,note;
+  if(vov<=0){region='CUTOFF';note='VGS is below VTH, so the model gives ID ≈ 0 regardless of VDS.';}
+  else if(vds>=vov){region='SATURATION';id=.5*k*vov*vov;
+    note='Saturation (VDS ≥ VOV): ID ≈ 0.5·K·VOV². gm = K·VOV = '+fmt(k*vov*1000,2)+' mS - this is the amplifying region for a MOSFET.';}
+  else{region='TRIODE (ohmic)';id=k*(vov*vds-vds*vds/2);
+    note='Triode (VDS &lt; VOV): the channel acts roughly like a resistor, rCH ≈ 1/(K·VOV) = '+fmt(1/(k*vov),1)+' Ω.';}
+  const pd=vds*id;
+  setHTML('mosBasicResult',
+   '<div class="metric-grid">'+
+   '<div class="metric"><small>VOV = VGS−VTH</small><strong>'+fmt(vov,2)+' V</strong></div>'+
+   '<div class="metric"><small>ID (model)</small><strong>'+fmt(id*1000,2)+' mA</strong></div>'+
+   '<div class="metric '+(region==='SATURATION'?'good':'')+'"><small>Region</small><strong>'+region+'</strong></div>'+
+   '<div class="metric"><small>PD = VDS·ID</small><strong>'+fmt(pd*1000,1)+' mW</strong></div>'+
+   '</div>'+
+   '<div class="result">'+note+'</div>');
+}
+
+/* ============ MOSFET bias (numeric solver) ============ */
+function solveMOSBias(vg,vdd,rd,rs,vth,k){
+  const rTot=rd+rs;
+  const imax=rTot>0?vdd/rTot:(vg>vth?k*(vg-vth)*(vg-vth):.001);
+  if(vg<=vth)return{id:0,vgs:vg,vds:vdd,vov:0,region:'CUTOFF'};
+  const f=I=>{const o=vg-I*rs-vth;return o<=0?-I:.5*k*o*o-I;};
+  if(f(0)<=0)return{id:0,vgs:vg,vds:vdd,vov:Math.max(0,vg-vth),region:'CUTOFF'};
+  let lo=0,hi=imax;
+  if(f(hi)>0)hi=imax*3;
+  for(let i=0;i<90;i++){const m=(lo+hi)/2;if(f(m)>0)lo=m;else hi=m;}
+  let id=(lo+hi)/2;
+  let vds=vdd-id*rTot,vgs=vg-id*rs,vov=vgs-vth;
+  if(vds>=vov)return{id,vgs,vds,vov,region:'SATURATION'};
+  const gf=I=>{const o=vg-I*rs-vth,d=vdd-I*rTot;if(o<=0||d<=0)return -I;return k*(o*d-d*d/2)-I;};
+  lo=0;hi=imax;
+  if(gf(0)>0){
+    for(let i=0;i<90;i++){const m=(lo+hi)/2;if(gf(m)>0)lo=m;else hi=m;}
+    id=(lo+hi)/2;vds=vdd-id*rTot;vgs=vg-id*rs;vov=vgs-vth;
+    return{id,vgs,vds,vov,region:'TRIODE'};
+  }
+  return{id,vgs,vds,vov,region:'SATURATION'};
+}
+function calcMOSBias(){
+  const V=pos($('mbVdd').value),r1=pos($('mbR1').value)*1000,r2=pos($('mbR2').value)*1000,
+        rd=pos($('mbRd').value)*1000,rs=pos($('mbRs').value),vth=pos($('mbVth').value,2),k=pos($('mbK').value,.02);
+  if(V<=0||r1<=0||r2<=0||rd<0||rs<0||k<=0){setHTML('mosBiasResult','<div class="result danger">Enter positive VDD, R1, R2 and K (RD and RS may be 0).</div>');return;}
+  const vg=V*r2/(r1+r2);
+  const s=solveMOSBias(vg,V,rd,rs,vth,k);
+  const pd=s.vds*s.id;
+  setHTML('mosBiasResult',
+   '<div class="metric-grid">'+
+   '<div class="metric"><small>VG (divider)</small><strong>'+fmt(vg,3)+' V</strong></div>'+
+   '<div class="metric"><small>VGS</small><strong>'+fmt(s.vgs,3)+' V</strong></div>'+
+   '<div class="metric"><small>ID</small><strong>'+fmt(s.id*1000,3)+' mA</strong></div>'+
+   '<div class="metric"><small>VDS</small><strong>'+fmt(s.vds,3)+' V</strong></div>'+
+   '<div class="metric '+(s.region==='SATURATION'?'good':(s.region==='CUTOFF'?'':'bad'))+'"><small>Region</small><strong>'+s.region+'</strong></div>'+
+   '<div class="metric"><small>PD</small><strong>'+fmt(pd*1000,1)+' mW</strong></div>'+
+   '</div>'+
+   (s.region==='SATURATION'
+    ?'<div class="result good">Saturation confirmed: VDS '+fmt(s.vds,2)+' V ≥ VOV '+fmt(s.vov,3)+' V - usable as an amplifier. VRD = '+fmt(s.id*rd*1000,0)+' mV, VRS = '+fmt(s.id*rs*1000,0)+' mV.</div>'
+    :(s.region==='TRIODE'
+      ?'<div class="result warn">The solution lands in triode (VDS '+fmt(s.vds,2)+' V &lt; VOV '+fmt(s.vov,2)+' V). For amplification, lower RS or RD, lower VTH or raise VG.</div>'
+      :'<div class="result danger">VG ('+fmt(vg,2)+' V) is at or below VTH ('+fmt(vth,2)+' V) - the device is cut off and ID ≈ 0. Raise the divider ratio (increase R2 or decrease R1).</div>')));
+}
+
+/* ============ MOSFET common-source amplifier ============ */
+function calcCS(){
+  const id=pos($('csId').value)/1000,k=pos($('csK').value,.02),rd=pos($('csRd').value)*1000,
+        rl=pos($('csRl').value)*1000,roIn=pos($('csRo').value)*1000,vin=pos($('csVin').value)/1000;
+  if(id<=0||k<=0){setHTML('csResult','<div class="result danger">ID and K must be positive.</div>');return;}
+  const vov=Math.sqrt(2*id/k), gm=Math.sqrt(2*k*id);
+  const rL=parallel(rd,rl,roIn);
+  const av=-gm*rL;
+  const voutPk=Math.abs(av)*vin;
+  setHTML('csResult',
+   '<div class="metric-grid">'+
+   '<div class="metric"><small>VOV</small><strong>'+fmt(vov,3)+' V</strong></div>'+
+   '<div class="metric"><small>gm = √(2K·ID)</small><strong>'+fmt(gm*1000,2)+' mS</strong></div>'+
+   '<div class="metric"><small>Load'+(roIn>0?' (RD∥RL∥ro)':' (RD∥RL)')+'</small><strong>'+fmt(rL/1000,2)+' kΩ</strong></div>'+
+   '<div class="metric hot"><small>Gain Av</small><strong>'+fmt(av,1)+'</strong></div>'+
+   '<div class="metric"><small>Vout pk</small><strong>'+fmt(voutPk*1000,0)+' mV</strong></div>'+
+   '<div class="metric"><small>ro included</small><strong>'+(roIn>0?'yes':'no')+'</strong></div>'+
+   '</div>'+
+   '<div class="result">Common-source small-signal gain Av ≈ −gm·(RD∥RL'+(roIn>0?'∥ro':'')+') = '+fmt(av,2)+' → '+fmt(voutPk*1000,0)+' mV pk out for '+fmt(vin*1000,0)+' mV pk in.</div>'+
+   (vin>0.2*vov?'<div class="result warn">Input '+fmt(vin*1000,0)+' mV pk is large against VOV = '+fmt(vov,2)+' V - the square-law characteristic will distort. Keep vgs below ~20% of VOV for reasonable linearity.</div>':''));
+}
+
+/* ============ MOSFET switch losses ============ */
+function calcMOSSwitch(){
+  const v=pos($('nsV').value),i=pos($('nsI').value),rds=pos($('nsRds').value)/1000,
+        f=pos($('nsF').value)*1000,qg=pos($('nsQg').value)*1e-9,vg=pos($('nsVg').value);
+  if(i<=0||rds<=0||f<=0){setHTML('mosSwitchResult','<div class="result danger">Load current, RDS(on) and frequency must be positive.</div>');return;}
+  const vdrop=i*rds, pcond=i*i*rds, pgate=qg*vg*f;
+  setHTML('mosSwitchResult',
+   '<div class="metric-grid">'+
+   '<div class="metric"><small>Voltage drop</small><strong>'+fmt(vdrop*1000,1)+' mV</strong></div>'+
+   '<div class="metric bad"><small>Conduction loss</small><strong>'+fmt(pcond,3)+' W</strong></div>'+
+   '<div class="metric"><small>Gate drive loss</small><strong>'+fmt(pgate*1000,2)+' mW</strong></div>'+
+   '<div class="metric"><small>Est. total (DC on)</small><strong>'+fmt(pcond+pgate,3)+' W</strong></div>'+
+   '</div>'+
+   '<div class="result">At ID = '+fmt(i,1)+' A the switch drops '+fmt(vdrop*1000,1)+' mV and dissipates I²·RDS(on) = '+fmt(pcond,3)+' W (assumes 100% on-time - scale by duty cycle). Charging the gate each cycle costs Qg·Vg·f = '+fmt(pgate*1000,2)+' mW.</div>'+
+   '<div class="result warn">Crossover loss (≈ ½·V·I·(tr+tf)·f) is not included - it needs rise/fall times or gate-drive current from the datasheet. Check SOA and heatsinking before building.</div>');
+}
+
+/* ============ small-signal toolkit ============ */
+function calcSSBJT(){
+  const ic=pos($('ssIc').value),b=Math.max(1,pos($('ssBeta').value,100)),vt=pos($('ssVt').value,25.85);
+  if(ic<=0||vt<=0){setHTML('ssBjtResult','<div class="result danger">IC and VT must be positive.</div>');return;}
+  const gm=ic/vt, rpi=b/gm, re=1/gm;
+  setHTML('ssBjtResult',
+   '<div class="metric-grid">'+
+   '<div class="metric"><small>gm = IC/VT</small><strong>'+fmt(gm*1000,2)+' mS</strong></div>'+
+   '<div class="metric"><small>rπ = β/gm</small><strong>'+fmt(rpi,0)+' Ω</strong></div>'+
+   '<div class="metric"><small>re = 1/gm</small><strong>'+fmt(re,2)+' Ω</strong></div>'+
+   '<div class="metric"><small>(β+1)·re check</small><strong>'+fmt((b+1)*re,0)+' Ω</strong></div>'+
+   '</div>'+
+   '<div class="result">At IC = '+fmt(ic,2)+' mA: gm = '+fmt(gm*1000,2)+' mS and rπ = '+fmt(rpi,0)+' Ω. Note rπ ≈ (β+1)·re = '+fmt((b+1)*re,0)+' Ω - the two views of the same model agree.</div>');
+}
+function calcSSMOS(){
+  const id=pos($('ssId').value)/1000,k=pos($('ssK').value,.02);
+  if(id<=0||k<=0){setHTML('ssMosResult','<div class="result danger">ID and K must be positive.</div>');return;}
+  const vov=Math.sqrt(2*id/k), gm=Math.sqrt(2*k*id), gm2=2*id/vov;
+  setHTML('ssMosResult',
+   '<div class="metric-grid">'+
+   '<div class="metric"><small>VOV</small><strong>'+fmt(vov,3)+' V</strong></div>'+
+   '<div class="metric"><small>gm = √(2K·ID)</small><strong>'+fmt(gm*1000,2)+' mS</strong></div>'+
+   '<div class="metric"><small>gm = 2ID/VOV</small><strong>'+fmt(gm2*1000,2)+' mS</strong></div>'+
+   '<div class="metric"><small>VGS needed</small><strong>'+fmt(vov,3)+' V over VTH</strong></div>'+
+   '</div>'+
+   '<div class="result">At ID = '+fmt(id*1000,2)+' mA with K = '+fmt(k,3)+' A/V²: VOV = '+fmt(vov,3)+' V and gm = '+fmt(gm*1000,2)+' mS. Both gm formulas agree - a useful sanity check of the K convention.</div>');
+}
+
+/* ============ transistor designer ============ */
+function designTransistor(){
+  const dev=$('tdDevice').value,V=pos($('tdV').value),It=pos($('tdI').value),
+        vq=pos($('tdVout').value),rmax=pos($('tdRmax').value),gainT=pos($('tdGain').value),
+        b=Math.max(1,pos($('tdBeta').value,100)),vth=pos($('tdVth').value,2),k=pos($('tdK').value,.02);
+  if(V<=0||It<=0||rmax<=0){setHTML('designResult','<div class="result danger">Supply, target current and resistor limit must be positive.</div>');return;}
+  if(vq<=0||vq>=V){setHTML('designResult','<div class="result danger">Target VCE/VDS must sit between 0 and the supply voltage.</div>');return;}
+  if(dev==='bjt'){
+    const I=It/1000, vt=state.settings.VT/1000, vbe=state.settings.vbe;
+    const ve=.1*V, re=ve/I, vc=vq+ve;
+    if(vc>=V-.1){setHTML('designResult','<div class="result danger">Target VCE ('+fmt(vq,1)+' V) plus VE ('+fmt(ve,2)+' V) leaves no collector headroom in a '+fmt(V,1)+' V supply. Lower the target VCE.</div>');return;}
+    const rc=(V-vc)/I, ib=I/b;
+    const vthD=vbe+ve, rth=.1*(b+1)*re;
+    const r1=rth*V/vthD, r2=rth*V/(V-vthD);
+    const reInt=vt/I;
+    const avByp=rc*1000/reInt, avUn=rc*1000/(reInt+re*1000);
+    const pd=vq*I;
+    let warn='';
+    if(rc>rmax)warn+='<div class="result warn">RC = '+fmt(rc,2)+' kΩ exceeds your '+fmt(rmax,1)+' kΩ limit - reduce target current or VCE.</div>';
+    if(gainT>avByp)warn+='<div class="result warn">Bypassed gain tops out near |Av| = '+fmt(avByp,0)+'; the target of '+fmt(gainT,0)+' needs more RC, more IC or a cascode.</div>';
+    setHTML('designResult',
+     '<h3>Proposed divider-bias NPN</h3>'+
+     '<div class="metric-grid">'+
+     '<div class="metric"><small>RE = 0.1·VCC/IC</small><strong>'+fmt(re,2)+' kΩ ≈ '+e24n(re*1000)+'</strong></div>'+
+     '<div class="metric"><small>RC</small><strong>'+fmt(rc,2)+' kΩ ≈ '+e24n(rc*1000)+'</strong></div>'+
+     '<div class="metric"><small>R1</small><strong>'+e24n(r1)+'</strong></div>'+
+     '<div class="metric"><small>R2</small><strong>'+e24n(r2)+'</strong></div>'+
+     '<div class="metric"><small>IB = IC/β</small><strong>'+fmt(ib*1e6,1)+' µA</strong></div>'+
+     '<div class="metric"><small>PD at Q</small><strong>'+fmt(pd*1000,1)+' mW</strong></div>'+
+     '</div>'+
+     '<div class="result">VE = '+fmt(ve,2)+' V, VC = '+fmt(vc,2)+' V, VCE = '+fmt(vq,1)+' V at IC = '+fmt(It,2)+' mA. Gain: |Av| ≈ '+fmt(avUn,1)+' unbypassed, ≈ '+fmt(avByp,0)+' with RE fully bypassed. For a target of '+fmt(gainT,0)+', split RE and bypass only part of it to land between the two.</div>'+warn+
+     '<div class="result warn">Rules of thumb used: VE ≈ 10% of VCC and RTH ≤ 0.1·(β+1)·RE for divider stiffness. Verify the point with the BJT Biasing calculator.</div>');
+  }else{
+    const I=It/1000;
+    if(k<=0){setHTML('designResult','<div class="result danger">K must be positive for a MOSFET design.</div>');return;}
+    const gm=Math.sqrt(2*k*I), vov=Math.sqrt(2*I/k);
+    let rd,note;
+    if(gainT>0){rd=gainT/gm;note='RD set by gain: RD = |Av|/gm = '+fmt(rd,0)+' Ω.';}
+    else{rd=(V-vq-.2*V)/I;note='No gain target given: RD from headroom after reserving 20% of VDD for VS.';}
+    const vs=V-vq-I*rd;
+    if(vs<0){setHTML('designResult','<div class="result danger">The gain target needs RD = '+fmt(rd,0)+' Ω, which leaves no source headroom (VS = '+fmt(vs,2)+' V). Lower the gain target, or raise ID or K.</div>');return;}
+    const rs=vs/I;
+    const vgs=vth+vov, vg=vgs+vs;
+    if(vg>=V){setHTML('designResult','<div class="result danger">Required gate voltage VG = '+fmt(vg,2)+' V reaches the supply rail. Reduce RS (less source degeneration) or the gain target.</div>');return;}
+    const rth=470000, r1=rth*V/vg, r2=rth*V/(V-vg);
+    const pd=vq*I;
+    let warn='';
+    if(rd/1000>rmax)warn+='<div class="result warn">RD = '+fmt(rd/1000,2)+' kΩ exceeds your '+fmt(rmax,1)+' kΩ limit.</div>';
+    if(vq<vov)warn+='<div class="result warn">VDS ('+fmt(vq,1)+' V) &lt; VOV ('+fmt(vov,2)+' V) - the device would leave saturation. Raise the VDS target or reduce ID/K.</div>';
+    setHTML('designResult',
+     '<h3>Proposed divider-bias NMOS</h3>'+
+     '<div class="metric-grid">'+
+     '<div class="metric"><small>gm</small><strong>'+fmt(gm*1000,2)+' mS</strong></div>'+
+     '<div class="metric"><small>RD</small><strong>'+fmt(rd,0)+' Ω ≈ '+e24n(rd)+'</strong></div>'+
+     '<div class="metric"><small>RS</small><strong>'+fmt(rs,0)+' Ω ≈ '+e24n(rs)+'</strong></div>'+
+     '<div class="metric"><small>VGS / VG</small><strong>'+fmt(vgs,2)+' / '+fmt(vg,2)+' V</strong></div>'+
+     '<div class="metric"><small>R1 / R2</small><strong>'+e24n(r1)+' / '+e24n(r2)+'</strong></div>'+
+     '<div class="metric"><small>PD at Q</small><strong>'+fmt(pd*1000,1)+' mW</strong></div>'+
+     '</div>'+
+     '<div class="result">'+note+' RS = '+fmt(rs,0)+' Ω gives VS = '+fmt(vs,2)+' V and VG = '+fmt(vg,2)+' V. Achieved |Av| ≈ gm·RD = '+fmt(gm*rd,1)+'. Check the point in the MOSFET Biasing calculator.</div>'+warn+
+     '<div class="result warn">Divider impedance is a free choice for a MOSFET (no gate current); 470 kΩ total is used here. Lower it if layout noise matters.</div>');
+  }
+}
+
+/* ============ device finder / problems / settings ============ */
+function renderDevices(){
+  const q=($('deviceSearch').value||'').toLowerCase(), t=$('deviceType').value;
+  const rows=devices.filter(d=>(t==='all'||d.type===t)&&(!q||(d.name+' '+d.use).toLowerCase().includes(q)));
+  $('deviceBody').innerHTML=rows.length
+   ?rows.map(d=>'<tr><td><b>'+d.name+'</b></td><td><span class="pill">'+d.type.toUpperCase()+'</span></td><td>'+d.v+'</td><td>'+d.i+'</td><td>'+d.gain+'</td><td>'+d.use+'</td></tr>').join('')
+   :'<tr><td colspan="6" style="text-align:center;padding:20px">No devices match.</td></tr>';
+}
+function renderProblem(){
+  const p=problemBank[state.problemIndex];if(!p)return;
+  $('problemCard').innerHTML='<b>Problem '+(state.problemIndex+1)+' / '+problemBank.length+'</b><br><br>'+p.q;
+  $('problemAnswer').innerHTML='<b>Answer.</b> '+p.a;
+  $('problemAnswer').classList.add('hidden');
+}
+function newProblem(){
+  let i=state.problemIndex;
+  if(problemBank.length>1){while(i===state.problemIndex)i=Math.floor(Math.random()*problemBank.length);}
+  state.problemIndex=i;renderProblem();saveState();
+}
+function revealProblem(){
+  const p=problemBank[state.problemIndex];if(!p)return;
+  $('problemAnswer').innerHTML='<b>Answer.</b> '+p.a;
+  $('problemAnswer').classList.remove('hidden');
+}
+function syncSettingsFields(){
+  $('setVT').value=state.settings.VT;
+  $('setBeta').value=state.settings.beta;
+  $('setVbe').value=state.settings.vbe;
+  $('setAccent').value=state.settings.accent;
+  $('setMode').value=state.settings.mode;
+}
+function updateDash(){
+  if($('dashVT'))$('dashVT').textContent=fmt(state.settings.VT,2)+' mV';
+  if($('dashBeta'))$('dashBeta').textContent=fmt(state.settings.beta,0);
+}
+function renderDashSummary(){
+  setHTML('dashSummary',
+   '<div class="grid" style="margin-bottom:0">'+
+   '<div class="col-6"><div class="lesson"><h4>Active defaults</h4><p>VT = '+fmt(state.settings.VT,2)+' mV · β = '+fmt(state.settings.beta,0)+' · VBE = '+fmt(state.settings.vbe,2)+' V.</p><p>These feed the calculators that reference defaults. Change them in Settings.</p></div></div>'+
+   '<div class="col-6"><div class="lesson"><h4>Suggested path</h4><p>1. Read <b>Learn Transistors</b>. 2. Bias a BJT. 3. Compute gain. 4. Watch the Q-point move in the <b>Visual Lab</b>. 5. Test yourself in Practice Problems.</p></div></div>'+
+   '</div>');
+}
+function saveSettings(){
+  state.settings.VT=pos($('setVT').value,25.85);
+  state.settings.beta=Math.max(1,pos($('setBeta').value,100));
+  state.settings.vbe=pos($('setVbe').value,.7);
+  state.settings.accent=$('setAccent').value;
+  state.settings.mode=$('setMode').value;
+  applySettings();updateDash();saveState();
+  setHTML('settingsResult','<div class="result good">Saved: VT = '+fmt(state.settings.VT,2)+' mV, β = '+fmt(state.settings.beta,0)+', VBE = '+fmt(state.settings.vbe,2)+' V, accent = '+state.settings.accent+', mode = '+state.settings.mode+'.</div>');
+  flash('Settings saved');
+}
+
+/* ============ Visual Lab ============ */
+const LC={bg:'#141110',grid:'#241f19',axis:'#3d372f',txt:'#a8a29e',dim:'#78706a',hot:'#fbbf24',alt:'#60a5fa',ok:'#34d399',bad:'#f87171',white:'#f5f5f4'};
+const LAB={mode:'bjt-load',playing:true,t:0,speed:1,params:{}};
+const LAB_DEF={
+ 'bjt-load':{vcc:12,rc:2.2,beta:100,ib:20},
+ 'bjt-curves':{vcc:12,rc:2.2,beta:100,ibStep:10},
+ 'mos-curves':{vdd:12,rd:.5,vth:2,k:.01,vgsStep:.5},
+ 'mos-transfer':{vth:2,k:.02,vgs:4},
+ 'amp-wave':{gain:20,vin:50,vceq:6,vcc:12},
+ 'power':{vcc:12,rc:2.2,icq:3,pdMax:40}
+};
+let lastReadout='';
+function readouts(html){if(html===lastReadout)return;lastReadout=html;const el=$('labReadouts');if(el)el.innerHTML=html;}
+function pill(l,v){return '<div class="readout">'+l+' <b>'+v+'</b></div>';}
+function ltxt(g,s,x,y,c,align,font){g.font=font||'10px ui-monospace,monospace';g.fillStyle=c||LC.txt;g.textAlign=align||'left';g.textBaseline='alphabetic';g.fillText(s,x,y);}
+function line(g,x1,y1,x2,y2,c,w,dash){g.strokeStyle=c;g.lineWidth=w||1;if(dash)g.setLineDash(dash);g.beginPath();g.moveTo(x1,y1);g.lineTo(x2,y2);g.stroke();if(dash)g.setLineDash([]);}
+function dot(g,x,y,c,r){g.fillStyle=c;g.beginPath();g.arc(x,y,r||3.5,0,Math.PI*2);g.fill();}
+function labFrame(g,w,h){g.fillStyle=LC.bg;g.fillRect(0,0,w,h);g.fillStyle='rgba(251,191,36,.045)';for(let x=14;x<w;x+=22)for(let y=14;y<h;y+=22)g.fillRect(x,y,1.3,1.3);}
+function plotBox(g,w,h,L,R,T,B,xl,yl,xMax,yMax){
+  const W=w-L-R,H=h-T-B;
+  const X=v=>L+v/xMax*W, Y=v=>T+H-v/yMax*H;
+  const xs=niceStep(xMax/5), ys=niceStep(yMax/4);
+  for(let n=0;n*xs<=xMax+xMax*1e-6;n++){const v=n*xs;line(g,X(v),T,X(v),T+H,LC.grid);ltxt(g,fmt(v,xs<1?1:0),X(v),T+H+14,LC.dim,'center');}
+  for(let n=0;n*ys<=yMax+yMax*1e-6;n++){const v=n*ys;line(g,L,Y(v),L+W,Y(v),LC.grid);ltxt(g,fmt(v,ys<1?1:0),L-6,Y(v)+3,LC.dim,'right');}
+  ltxt(g,xl,L+W/2,h-4,LC.dim,'center');
+  ltxt(g,yl,L-4,T-6,LC.dim,'right');
+  return{X,Y,L,T,W,H};
+}
+const bjtKnee=v=>1/(1+Math.exp(-(v-.1)/.044));
+
+function drawBJTLoad(g,w,h){
+  const p=LAB.params['bjt-load'];
+  const vcc=p.vcc,rc=p.rc,beta=p.beta,vcesat=.2;
+  const ild=vcc/rc, icSat=(vcc-vcesat)/rc, imax=ild*1.08;
+  labFrame(g,w,h);
+  const B=plotBox(g,w,h,52,16,20,38,'VCE (V)','IC (mA)',vcc,imax);
+  g.fillStyle='rgba(248,113,113,.07)';g.fillRect(B.L,B.T,B.X(vcesat)-B.L,B.H);
+  ltxt(g,'sat',B.X(vcesat)+4,B.T+10,LC.bad,'left','9px ui-monospace,monospace');
+  g.strokeStyle=LC.hot;g.lineWidth=2;g.beginPath();
+  g.moveTo(B.X(0),B.Y(ild));g.lineTo(B.X(vcc),B.Y(0));g.stroke();g.lineWidth=1;
+  const icWant=beta*p.ib/1000;
+  let ic,vce,reg;
+  if(icWant>=icSat-1e-9){ic=icSat;vce=vcesat;reg='SATURATED';}
+  else if(icWant<1e-4){ic=0;vce=vcc;reg='CUTOFF';}
+  else{ic=icWant;vce=vcc-ic*rc;reg='ACTIVE';}
+  if(LAB.playing&&reg==='ACTIVE'){
+    const sw=Math.min(.25*vcc,(vcc-ic*rc)*.5,ic*rc*.5);
+    const v1=Math.max(vcesat,vce-sw),v2=Math.min(vcc,vce+sw);
+    line(g,B.X(v1),B.Y((vcc-v1)/rc),B.X(v2),B.Y((vcc-v2)/rc),LC.alt,1,[4,4]);
+    const ph=(Math.sin(LAB.t*2.2)+1)/2, vv=v1+(v2-v1)*ph;
+    dot(g,B.X(vv),B.Y((vcc-vv)/rc),LC.alt,3);
+  }
+  line(g,B.L,B.Y(ic),B.X(vce),B.Y(ic),LC.grid,1,[3,3]);
+  line(g,B.X(vce),B.Y(ic),B.X(vce),B.T+B.H,LC.grid,1,[3,3]);
+  dot(g,B.X(vce),B.Y(ic),reg==='ACTIVE'?LC.ok:LC.bad,5);
+  ltxt(g,'Q',B.X(vce)+8,B.Y(ic)-8,LC.white,'left','700 11px ui-monospace,monospace');
+  ltxt(g,reg,B.X(vce)+8,B.Y(ic)+4,reg==='ACTIVE'?LC.ok:LC.bad,'left','700 10px ui-monospace,monospace');
+  readouts(pill('VCE',fmt(vce,2)+' V')+pill('IC',fmt(ic,2)+' mA')+pill('IB',fmt(p.ib,0)+' µA')+pill('PD',fmt(vce*ic,0)+' mW'));
+}
+function drawBJTCurves(g,w,h){
+  const p=LAB.params['bjt-curves'];
+  const vcc=p.vcc,rc=p.rc,beta=p.beta,stepU=p.ibStep;
+  const ild=vcc/rc, icTop=beta*stepU*6/1000;
+  const imax=Math.max(icTop,ild)*1.1;
+  labFrame(g,w,h);
+  const B=plotBox(g,w,h,52,16,20,38,'VCE (V)','IC (mA)',vcc,imax);
+  for(let n=1;n<=6;n++){
+    const icF=beta*stepU*n/1000;
+    g.strokeStyle=LC.hot;g.globalAlpha=.9;g.beginPath();
+    for(let px=0;px<=B.W;px+=2){
+      const v=px/B.W*vcc, i=icF*bjtKnee(v);
+      px===0?g.moveTo(B.X(v),B.Y(i)):g.lineTo(B.X(v),B.Y(i));
+    }
+    g.stroke();g.globalAlpha=1;
+    ltxt(g,(stepU*n)+'µA',B.X(vcc)-4,B.Y(icF)-4,LC.dim,'right');
+  }
+  g.strokeStyle=LC.alt;g.lineWidth=2;g.beginPath();
+  g.moveTo(B.X(0),B.Y(ild));g.lineTo(B.X(vcc),B.Y(0));g.stroke();g.lineWidth=1;
+  for(let n=1;n<=6;n++){
+    const icF=beta*stepU*n/1000;
+    let vx=vcc;
+    for(let s2=0;s2<=200;s2++){
+      const v=s2/200*vcc;
+      if(icF*bjtKnee(v)>=(vcc-v)/rc-1e-9){vx=v;break;}
+    }
+    dot(g,B.X(vx),B.Y((vcc-vx)/rc),LC.white,2.5);
+  }
+  if(LAB.playing){
+    const ph=(Math.sin(LAB.t*1.1)+1)/2, vv=ph*vcc;
+    dot(g,B.X(vv),B.Y((vcc-vv)/rc),LC.ok,3.5);
+  }
+  readouts(pill('β',beta)+pill('IB step',stepU+' µA')+pill('load',vcc+'V/'+rc+'kΩ')+pill('IC max',fmt(ild,1)+' mA'));
+}
+function drawMOSCurves(g,w,h){
+  const p=LAB.params['mos-curves'];
+  const vdd=p.vdd,rd=p.rd,vth=p.vth,k=p.k,step=p.vgsStep;
+  const ild=vdd/rd, idTop=.5*k*(6*step)*(6*step)*1000;
+  const imax=Math.max(ild,idTop)*1.12;
+  labFrame(g,w,h);
+  const B=plotBox(g,w,h,52,16,20,38,'VDS (V)','ID (mA)',vdd,imax);
+  g.strokeStyle=LC.ok;g.setLineDash([4,4]);g.beginPath();
+  for(let i=0;i<=120;i++){const vov=i/120*vdd,i2=.5*k*vov*vov*1000;
+    i===0?g.moveTo(B.X(vov),B.Y(i2)):g.lineTo(B.X(vov),B.Y(i2));}
+  g.stroke();g.setLineDash([]);
+  ltxt(g,'sat boundary',B.X(vdd*.42),B.Y(.5*k*(vdd*.42)*(vdd*.42)*1000)-6,LC.ok,'center','9px ui-monospace,monospace');
+  for(let n=1;n<=6;n++){
+    const vov=n*step;
+    g.strokeStyle=LC.hot;g.beginPath();
+    for(let px=0;px<=B.W;px+=2){
+      const v=px/B.W*vdd;
+      const i=(v<vov?k*(vov*v-v*v/2):.5*k*vov*vov)*1000;
+      px===0?g.moveTo(B.X(v),B.Y(i)):g.lineTo(B.X(v),B.Y(i));
+    }
+    g.stroke();
+    ltxt(g,'VGS '+fmt(vth+vov,1)+'V',B.X(vdd)-4,B.Y(.5*k*vov*vov*1000)-4,LC.dim,'right');
+  }
+  g.strokeStyle=LC.alt;g.lineWidth=2;g.beginPath();
+  g.moveTo(B.X(0),B.Y(ild));g.lineTo(B.X(vdd),B.Y(0));g.stroke();g.lineWidth=1;
+  if(LAB.playing){
+    const ph=(Math.sin(LAB.t*1.1)+1)/2, vv=ph*vdd;
+    dot(g,B.X(vv),B.Y((vdd-vv)/rd),LC.white,3.5);
+  }
+  readouts(pill('VTH',fmt(vth,1)+' V')+pill('K',fmt(k,3))+pill('load',vdd+'V/'+fmt(rd,1)+'kΩ')+pill('ID max',fmt(ild,1)+' mA'));
+}
+function drawMOSTransfer(g,w,h){
+  const p=LAB.params['mos-transfer'];
+  const vth=p.vth,k=p.k,vgMax=12;
+  const idAt=v=>v<=vth?0:.5*k*(v-vth)*(v-vth);
+  const imax=idAt(vgMax)*1000*1.08||1;
+  labFrame(g,w,h);
+  const B=plotBox(g,w,h,52,16,20,38,'VGS (V)','ID (mA)',vgMax,imax);
+  g.fillStyle='rgba(248,113,113,.05)';g.fillRect(B.L,B.T,B.X(vth)-B.L,B.H);
+  ltxt(g,'VTH',B.X(vth),B.T+11,LC.bad,'center');
+  g.strokeStyle=LC.hot;g.lineWidth=2;g.beginPath();
+  for(let px=0;px<=B.W;px+=2){const v=px/B.W*vgMax,i=idAt(v)*1000;
+    px===0?g.moveTo(B.X(v),B.Y(i)):g.lineTo(B.X(v),B.Y(i));}
+  g.stroke();g.lineWidth=1;
+  const wig=LAB.playing?.18*Math.sin(LAB.t*2.4):0;
+  const vq=Math.min(vgMax,Math.max(0,p.vgs+wig));
+  const iq=idAt(vq)*1000, gm=vq>vth?k*(vq-vth):0;
+  if(gm>0){
+    const v1=Math.max(vth,vq-1),v2=Math.min(vgMax,vq+1);
+    const i1=(idAt(vq)+gm*(v1-vq))*1000,i2=(idAt(vq)+gm*(v2-vq))*1000;
+    line(g,B.X(v1),B.Y(i1),B.X(v2),B.Y(i2),LC.alt,1,[5,4]);
+    ltxt(g,'gm slope',B.X(v2)-4,B.Y(i2)-5,LC.alt,'right','9px ui-monospace,monospace');
+  }
+  line(g,B.L,B.Y(iq),B.X(vq),B.Y(iq),LC.grid,1,[3,3]);
+  line(g,B.X(vq),B.Y(iq),B.X(vq),B.T+B.H,LC.grid,1,[3,3]);
+  dot(g,B.X(vq),B.Y(iq),LC.ok,5);
+  readouts(pill('VGS',fmt(vq,2)+' V')+pill('VOV',fmt(Math.max(0,vq-vth),2)+' V')+pill('ID',fmt(iq,2)+' mA')+pill('gm',fmt(gm*1000,2)+' mS'));
+}
+function drawAmpWave(g,w,h){
+  const p=LAB.params['amp-wave'];
+  const gain=p.gain,vinM=p.vin,vceq=p.vceq,vcc=p.vcc,vcesat=.2;
+  labFrame(g,w,h);
+  const L=52,R=16,midGap=30;
+  const hTop=Math.round((h-16-34-midGap)*.3);
+  const T1=16,H1=hTop,T2=16+hTop+midGap,H2=h-34-T2;
+  const W=w-L-R, cycles=2.5;
+  const ph=x=>(x-L)/W*cycles*2*Math.PI-LAB.t*2.4;
+  ltxt(g,'input  ('+vinM+' mV pk)',L+6,T1+11,LC.alt,'left','9px ui-monospace,monospace');
+  const midY1=T1+H1/2, ampY1=H1/2*.8;
+  line(g,L,midY1,L+W,midY1,LC.axis);
+  g.strokeStyle=LC.alt;g.beginPath();
+  for(let x=L;x<=L+W;x+=2){const y=midY1-Math.sin(ph(x))*ampY1;
+    x===L?g.moveTo(x,y):g.lineTo(x,y);}
+  g.stroke();
+  g.strokeStyle=LC.axis;g.strokeRect(L,T1,W,H1);
+  ltxt(g,'output VCE(t) - inverted',L+6,T2+11,LC.hot,'left','9px ui-monospace,monospace');
+  const Y2=v=>T2+H2-v/vcc*H2;
+  line(g,L,Y2(vcc),L+W,Y2(vcc),LC.bad,1,[4,3]);
+  line(g,L,Y2(vcesat),L+W,Y2(vcesat),LC.bad,1,[4,3]);
+  ltxt(g,'VCC',L-6,Y2(vcc)+3,LC.bad,'right');
+  ltxt(g,'VCEsat',L-6,Y2(vcesat)+3,LC.bad,'right');
+  line(g,L,Y2(vceq),L+W,Y2(vceq),LC.grid,1,[2,4]);
+  const outPk=gain*vinM/1000;
+  const clipUp=vceq+outPk>vcc, clipDn=vceq-outPk<vcesat;
+  const rawAt=x=>vceq-gain*(vinM/1000)*Math.sin(ph(x));
+  g.strokeStyle=LC.hot;g.lineWidth=2;g.beginPath();
+  for(let x=L;x<=L+W;x+=2){
+    const v=Math.min(vcc,Math.max(vcesat,rawAt(x)));
+    x===L?g.moveTo(x,Y2(v)):g.lineTo(x,Y2(v));
+  }
+  g.stroke();g.lineWidth=1;
+  let prevClip=false,segStart=0;const segs=[];
+  for(let x=L;x<=L+W;x+=2){
+    const r2=rawAt(x), isClip=r2>vcc||r2<vcesat;
+    if(isClip&&!prevClip)segStart=x;
+    if(!isClip&&prevClip)segs.push([segStart,x]);
+    prevClip=isClip;
+  }
+  if(prevClip)segs.push([segStart,L+W]);
+  g.strokeStyle=LC.bad;g.lineWidth=3;
+  for(let s3=0;s3<segs.length;s3++){
+    g.beginPath();
+    for(let x=segs[s3][0];x<=segs[s3][1];x+=2){
+      const v=Math.min(vcc,Math.max(vcesat,rawAt(x)));
+      x===segs[s3][0]?g.moveTo(x,Y2(v)):g.lineTo(x,Y2(v));
+    }
+    g.stroke();
+  }
+  g.lineWidth=1;
+  g.strokeStyle=LC.axis;g.strokeRect(L,T2,W,H2);
+  ltxt(g,'time →',L+W/2,h-8,LC.dim,'center');
+  readouts(pill('Av','−'+fmt(gain,0))+pill('Vin pk',vinM+' mV')+pill('Vout pk',fmt(outPk*1000,0)+' mV')+
+    pill('head up',fmt((vcc-vceq)*1000,0)+' mV')+pill('head dn',fmt((vceq-vcesat)*1000,0)+' mV')+
+    ((clipUp||clipDn)?'<div class="readout" style="color:#f87171">⚠ CLIPPING</div>':''));
+}
+function drawPower(g,w,h){
+  const p=LAB.params['power'];
+  const vcc=p.vcc,rc=p.rc,pdMax=p.pdMax;
+  const pAt=v=>v*(vcc-v)/rc;
+  const pPeak=vcc*vcc/(4*rc);
+  const imax=Math.max(pPeak,pdMax)*1.15;
+  labFrame(g,w,h);
+  const B=plotBox(g,w,h,52,16,20,38,'VCE (V)','PD (mW)',vcc,imax);
+  g.strokeStyle=LC.hot;g.lineWidth=2;g.beginPath();
+  for(let px=0;px<=B.W;px+=2){const v=px/B.W*vcc;
+    px===0?g.moveTo(B.X(v),B.Y(pAt(v))):g.lineTo(B.X(v),B.Y(pAt(v)));}
+  g.stroke();g.lineWidth=1;
+  line(g,B.X(vcc/2),B.Y(pPeak),B.X(vcc/2),B.T+B.H,LC.grid,1,[3,3]);
+  ltxt(g,'max '+fmt(pPeak,0)+' mW @ VCC/2',B.X(vcc/2)+5,B.Y(pPeak)-6,LC.txt,'left','9px ui-monospace,monospace');
+  line(g,B.L,B.Y(pdMax),B.L+B.W,B.Y(pdMax),LC.bad,1.5,[5,3]);
+  ltxt(g,'device limit',B.L+B.W-5,B.Y(pdMax)-5,LC.bad,'right','9px ui-monospace,monospace');
+  const ild=vcc/rc;
+  let vce,ic,satFlag=false;
+  if(p.icq>=ild){vce=.2;ic=ild;satFlag=true;}
+  else{vce=vcc-p.icq*rc;ic=p.icq;}
+  const pd=vce*ic, over=pd>pdMax;
+  line(g,B.L,B.Y(pd),B.X(vce),B.Y(pd),LC.grid,1,[3,3]);
+  line(g,B.X(vce),B.Y(pd),B.X(vce),B.T+B.H,LC.grid,1,[3,3]);
+  dot(g,B.X(vce),B.Y(pd),over?LC.bad:LC.ok,5);
+  if(LAB.playing){
+    const ph=(Math.sin(LAB.t*1.4)+1)/2, v=ph*vcc;
+    dot(g,B.X(v),B.Y(pAt(v)),LC.white,2.5);
+  }
+  readouts(pill('VCE',fmt(vce,2)+' V')+pill('IC',fmt(ic,2)+' mA')+pill('PD',fmt(pd,1)+' mW')+
+    (over?pill('OVER LIMIT',fmt(pd/pdMax*100,0)+'%'):pill('vs limit',fmt(pd/pdMax*100,0)+'%'))+
+    (satFlag?pill('Q','SATURATED'):''));
+}
+const MODES={
+ 'bjt-load':{title:'BJT load line',
+  controls:[{key:'vcc',label:'VCC',min:3,max:24,step:.5,dec:1,unit:' V'},
+            {key:'rc',label:'RC',min:.5,max:10,step:.1,dec:1,unit:' kΩ'},
+            {key:'beta',label:'Beta β',min:20,max:400,step:5,dec:0,unit:''},
+            {key:'ib',label:'IB',min:0,max:100,step:1,dec:0,unit:' µA'}],
+  legend:[[LC.hot,'DC load line'],[LC.alt,'AC swing (animated)'],[LC.ok,'Q point']],
+  draw:drawBJTLoad},
+ 'bjt-curves':{title:'BJT output curves',
+  controls:[{key:'vcc',label:'VCC',min:3,max:24,step:.5,dec:1,unit:' V'},
+            {key:'rc',label:'RC',min:.5,max:10,step:.1,dec:1,unit:' kΩ'},
+            {key:'beta',label:'Beta β',min:20,max:400,step:5,dec:0,unit:''},
+            {key:'ibStep',label:'IB step',min:2,max:40,step:1,dec:0,unit:' µA'}],
+  legend:[[LC.hot,'device curves (IB steps)'],[LC.alt,'load line'],[LC.white,'bias solutions']],
+  draw:drawBJTCurves},
+ 'mos-curves':{title:'MOSFET output curves',
+  controls:[{key:'vdd',label:'VDD',min:3,max:24,step:.5,dec:1,unit:' V'},
+            {key:'rd',label:'RD',min:.5,max:10,step:.1,dec:1,unit:' kΩ'},
+            {key:'vth',label:'VTH',min:.5,max:5,step:.1,dec:1,unit:' V'},
+            {key:'k',label:'K',min:.005,max:.1,step:.005,dec:3,unit:' A/V²'},
+            {key:'vgsStep',label:'VGS step',min:.5,max:2,step:.1,dec:1,unit:' V'}],
+  legend:[[LC.hot,'device curves (VGS steps)'],[LC.ok,'saturation boundary'],[LC.alt,'load line']],
+  draw:drawMOSCurves},
+ 'mos-transfer':{title:'MOSFET transfer',
+  controls:[{key:'vth',label:'VTH',min:.5,max:5,step:.1,dec:1,unit:' V'},
+            {key:'k',label:'K',min:.005,max:.1,step:.005,dec:3,unit:' A/V²'},
+            {key:'vgs',label:'VGS at Q',min:0,max:12,step:.1,dec:1,unit:' V'}],
+  legend:[[LC.hot,'ID vs VGS'],[LC.alt,'gm tangent'],[LC.ok,'operating point']],
+  draw:drawMOSTransfer},
+ 'amp-wave':{title:'Amplifier waveform',
+  controls:[{key:'gain',label:'Gain |Av|',min:1,max:100,step:1,dec:0,unit:''},
+            {key:'vin',label:'Vin pk',min:5,max:500,step:5,dec:0,unit:' mV'},
+            {key:'vceq',label:'VCE at Q',min:1,max:11,step:.1,dec:1,unit:' V'},
+            {key:'vcc',label:'VCC',min:5,max:15,step:.5,dec:1,unit:' V'}],
+  legend:[[LC.alt,'input'],[LC.hot,'output (inverted)'],[LC.bad,'rails / clipped']],
+  draw:drawAmpWave},
+ 'power':{title:'Power dissipation',
+  controls:[{key:'vcc',label:'VCC',min:3,max:24,step:.5,dec:1,unit:' V'},
+            {key:'rc',label:'RC',min:.5,max:10,step:.1,dec:1,unit:' kΩ'},
+            {key:'icq',label:'IC at Q',min:.5,max:10,step:.1,dec:1,unit:' mA'},
+            {key:'pdMax',label:'PD limit',min:10,max:2000,step:5,dec:0,unit:' mW'}],
+  legend:[[LC.hot,'PD along load line'],[LC.ok,'Q dissipation'],[LC.bad,'device limit']],
+  draw:drawPower}
+};
+function ctlText(c,v){const d=c.dec===undefined?0:c.dec;return v.toFixed(d)+(c.unit||'');}
+function buildLabControls(){
+  const m=MODES[LAB.mode], box=$('labControls');
+  box.innerHTML='';
+  for(let i=0;i<m.controls.length;i++){
+    const c=m.controls[i];
+    const d=document.createElement('div');d.className='ctl';
+    const head=document.createElement('div');head.className='ctl-head';
+    head.innerHTML='<label>'+c.label+'</label><span class="ctl-val"></span>';
+    const val=head.querySelector('.ctl-val');
+    const r=document.createElement('input');
+    r.type='range';r.min=c.min;r.max=c.max;r.step=c.step;
+    r.value=LAB.params[LAB.mode][c.key];
+    const show=()=>{val.textContent=ctlText(c,LAB.params[LAB.mode][c.key]);};
+    r.addEventListener('input',()=>{LAB.params[LAB.mode][c.key]=+r.value;show();scheduleLabSave();});
+    d.appendChild(head);d.appendChild(r);box.appendChild(d);
+    show();
+  }
+}
+let labSaveTm=0;
+function scheduleLabSave(){clearTimeout(labSaveTm);labSaveTm=setTimeout(()=>{try{localStorage.setItem('aznur_transistor_state',JSON.stringify(state))}catch(e){}},400);}
+function updateLegend(){
+  const el=$('labLegend');if(!el)return;
+  el.innerHTML=MODES[LAB.mode].legend.map(l=>'<div class="legend-line"><span class="legend-swatch" style="background:'+l[0]+'"></span>'+l[1]+'</div>').join('');
+}
+function setLabMode(mode){
+  if(!MODES[mode])mode='bjt-load';
+  LAB.mode=mode;state.labMode=mode;
+  document.querySelectorAll('.lab-tab').forEach(b=>b.classList.toggle('on',b.dataset.mode===mode));
+  LAB.params[mode]=Object.assign({},LAB_DEF[mode],(state.labParams&&state.labParams[mode])||{});
+  buildLabControls();updateLegend();
+  lastReadout='';
+  $('ctxLab').textContent=MODES[mode].title;
+  resizeCanvas();
+  saveState();
+}
+function resizeCanvas(){
+  const cv=$('labCanvas');if(!cv)return;
+  const r=cv.parentElement.getBoundingClientRect();
+  if(r.width<5||r.height<5)return;
+  const d=window.devicePixelRatio||1;
+  cv.width=Math.round(r.width*d);cv.height=Math.round(r.height*d);
+  cv.getContext('2d').setTransform(d,0,0,d,0,0);
+}
+window.addEventListener('resize',resizeCanvas);
+function labLoop(){
+  requestAnimationFrame(labLoop);
+  const vis=$('visual');
+  if(!vis||!vis.classList.contains('active'))return;
+  if(LAB.playing)LAB.t+=.016*LAB.speed;
+  const cv=$('labCanvas');if(!cv)return;
+  const w=cv.clientWidth,h=cv.clientHeight;
+  if(!w||!h)return;
+  const g=cv.getContext('2d');
+  g.clearRect(0,0,w,h);
+  MODES[LAB.mode].draw(g,w,h);
+}
+function initLab(){
+  document.querySelectorAll('.lab-tab').forEach(b=>b.addEventListener('click',()=>setLabMode(b.dataset.mode)));
+  $('labPlay').addEventListener('click',()=>{
+    LAB.playing=!LAB.playing;state.labPaused=!LAB.playing;
+    $('labPlay').textContent=LAB.playing?'⏸':'▶';
+  });
+  $('labReset').addEventListener('click',()=>{
+    LAB.params[LAB.mode]=Object.assign({},LAB_DEF[LAB.mode]);
+    LAB.t=0;buildLabControls();flash('Lab mode reset');
+  });
+  $('labPNG').addEventListener('click',()=>{
+    const cv=$('labCanvas');
+    cv.toBlob(b=>{
+      const a=document.createElement('a');
+      a.href=URL.createObjectURL(b);a.download='aznur-lab-'+LAB.mode+'.png';a.click();
+      setTimeout(()=>URL.revokeObjectURL(a.href),800);
+    });
+    flash('PNG exported');
+  });
+  $('labSpeed').addEventListener('input',()=>{
+    LAB.speed=+$('labSpeed').value;
+    $('labSpeedVal').textContent=LAB.speed.toFixed(1)+'x';
+  });
+  if(window.ResizeObserver)new ResizeObserver(resizeCanvas).observe($('labCanvas').parentElement);
+}
+
+/* ============ init ============ */
+function init(){
+  state.labParams=LAB.params;
+  document.querySelectorAll('#nav button[data-section]').forEach(b=>b.addEventListener('click',()=>go(b.dataset.section)));
+  initLab();
+  document.addEventListener('input',persistFields);
+  document.addEventListener('change',persistFields);
+  document.addEventListener('keydown',e=>{
+    if(e.key!=='Enter')return;
+    const t=e.target;
+    if(!t.matches||!t.matches('input:not([type=range]):not([type=file]),select'))return;
+    const sec=t.closest('.section');if(!sec)return;
+    const btn=sec.querySelector('.btn.primary');
+    if(btn){e.preventDefault();btn.click();}
+  });
+  renderDevices();
+  renderProblem();
+  setLabMode('bjt-load');
+  loadState();
+  state.labParams=LAB.params;               /* re-link after loadState merge */
+  LAB.playing=!state.labPaused;
+  $('labPlay').textContent=LAB.playing?'⏸':'▶';
+  syncSettingsFields();
+  updateDash();
+  renderDashSummary();
+  requestAnimationFrame(labLoop);
+}
+document.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
+</html>
